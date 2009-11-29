@@ -183,6 +183,12 @@ class PHPDCD_Detector
             }
         }
 
+        foreach ($declared as $name => $source) {
+            if (!isset($called[$name])) {
+                $result[$name] = $source;
+            }
+        }
+
         return $result;
     }
 }
