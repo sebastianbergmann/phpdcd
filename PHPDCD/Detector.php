@@ -65,6 +65,7 @@ class PHPDCD_Detector
         $called       = array();
         $currentBlock = NULL;
         $currentClass = '';
+        $declared     = array();
         $namespace    = '';
         $result       = array();
 
@@ -94,6 +95,24 @@ class PHPDCD_Detector
                     }
 
                     $currentBlock = $currentClass;
+                }
+
+                else if ($tokens[$i] instanceof PHP_Token_FUNCTION &&
+                         !$tokens[$i+1] instanceof PHP_Token_OPEN_BRACKET &&
+                         !$tokens[$i+2] instanceof PHP_Token_OPEN_BRACKET) {
+                    if ($tokens[$i+2] instanceof PHP_Token_STRING) {
+                        $function = (string)$tokens[$i+2];
+                    } else {
+                        $function = (string)$tokens[$i+3];
+                    }
+
+                    if ($currentClass != '') {
+                        $function = $currentClass . '::' . $function;
+                    }
+
+                    $declared[$function] = array(
+                      'file' => $file, 'line' => $tokens[$i]->getLine()
+                    );
                 }
 
                 else if ($tokens[$i] instanceof PHP_Token_OPEN_CURLY) {
