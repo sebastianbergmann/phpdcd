@@ -5,11 +5,6 @@ phpdcd
 
 The goal of **phpdcd** is not not to replace more sophisticated tools such as [phpcs](http://pear.php.net/PHP_CodeSniffer), [pdepend](http://pdepend.org/), or [phpmd](http://phpmd.org/), but rather to provide an alternative to them when you just need to get a quick overview of unused code in a project.
 
-Requirements
-------------
-
-* The [tokenizer](http://www.php.net/tokenizer) extension is required.
-
 Installation
 ------------
 
