@@ -88,6 +88,11 @@ class PHPDCD_Detector
 
                 else if ($tokens[$i] instanceof PHP_Token_CLASS) {
                     $currentClass = (string)$tokens[$i+2];
+
+                    if ($namespace != '') {
+                        $currentClass = $namespace . '\\' . $currentClass;
+                    }
+
                     $currentBlock = $currentClass;
                 }
 
