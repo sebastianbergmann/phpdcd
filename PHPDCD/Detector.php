@@ -61,9 +61,102 @@ class PHPDCD_Detector
      */
     public function detectDeadCode(array $files)
     {
-        $result = array();
+        $blocks       = array();
+        $called       = array();
+        $currentBlock = NULL;
+        $currentClass = '';
+        $namespace    = '';
+        $result       = array();
 
         foreach ($files as $file) {
+            $tokens = new PHP_Token_Stream($file);
+            $count  = count($tokens);
+
+            for ($i = 0; $i < $count; $i++) {
+                if ($tokens[$i] instanceof PHP_Token_NAMESPACE) {
+                    $namespace = (string)$tokens[$i+2];
+
+                    for ($j = $i+3; ; $j += 2) {
+                        if (isset($tokens[$j]) &&
+                            $tokens[$j] instanceof PHP_Token_NS_SEPARATOR) {
+                            $namespace .= '\\' . $tokens[$j+1];
+                        } else {
+                            break;
+                        }
+                    }
+                }
+
+                else if ($tokens[$i] instanceof PHP_Token_CLASS) {
+                    $currentClass = (string)$tokens[$i+2];
+                    $currentBlock = $currentClass;
+                }
+
+                else if ($tokens[$i] instanceof PHP_Token_OPEN_CURLY) {
+                    array_push($blocks, $currentBlock);
+                    $currentBlock = NULL;
+                }
+
+                else if ($tokens[$i] instanceof PHP_Token_CLOSE_CURLY) {
+                    $block = array_pop($blocks);
+
+                    if ($block !== NULL) {
+                        $currentClass = '';
+                    }
+                }
+
+                else if ($tokens[$i] instanceof PHP_Token_OPEN_BRACKET) {
+                    if ($tokens[$i-1] instanceof PHP_Token_STRING) {
+                        $j = -1;
+                    }
+
+                    else if ($tokens[$i-1] instanceof PHP_Token_WHITESPACE &&
+                             $tokens[$i-2] instanceof PHP_Token_STRING) {
+                        $j = -2;
+                    }
+
+                    else {
+                        continue;
+                    }
+
+                    $function         = (string)$tokens[$i+$j];
+                    $lookForNamespace = TRUE;
+
+                    if ($tokens[$i+$j-2] instanceof PHP_Token_NEW) {
+                        $function .= '::__construct';
+                    }
+
+                    else if ($tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR ||
+                             $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR) {
+                        $lookForNamespace = FALSE;
+
+                        // TODO: Try to resolve object to class.
+                    }
+
+                    else if ($tokens[$i+$j-1] instanceof PHP_Token_DOUBLE_COLON) {
+                        $class = $tokens[$i+$j-2];
+
+                        if ($class == 'self' || $class == 'static') {
+                            $class = $currentClass;
+                        }
+
+                        $function = $class . '::' . $function;
+                        $j       -= 2;
+                    }
+
+                    if ($lookForNamespace) {
+                        while ($tokens[$i+$j-1] instanceof PHP_Token_NS_SEPARATOR) {
+                            $function = $tokens[$i+$j-2] . '\\' . $function;
+                            $j       -= 2;
+                        }
+                    }
+
+                    if (!isset($called[$function])) {
+                        $called[$function] = 1;
+                    } else {
+                        $called[$function]++;
+                    }
+                }
+            }
         }
 
         return $result;
