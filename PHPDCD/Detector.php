@@ -61,13 +61,14 @@ class PHPDCD_Detector
      */
     public function detectDeadCode(array $files)
     {
-        $blocks       = array();
-        $called       = array();
-        $currentBlock = NULL;
-        $currentClass = '';
-        $declared     = array();
-        $namespace    = '';
-        $result       = array();
+        $blocks          = array();
+        $called          = array();
+        $currentBlock    = NULL;
+        $currentClass    = '';
+        $currentFunction = '';
+        $declared        = array();
+        $namespace       = '';
+        $result          = array();
 
         foreach ($files as $file) {
             $tokens = new PHP_Token_Stream($file);
@@ -110,6 +111,9 @@ class PHPDCD_Detector
                         $function = $currentClass . '::' . $function;
                     }
 
+                    $currentFunction = $function;
+                    $currentBlock    = $currentFunction;
+
                     $declared[$function] = array(
                       'file' => $file, 'line' => $tokens[$i]->getLine()
                     );
@@ -123,8 +127,12 @@ class PHPDCD_Detector
                 else if ($tokens[$i] instanceof PHP_Token_CLOSE_CURLY) {
                     $block = array_pop($blocks);
 
-                    if ($block !== NULL) {
+                    if ($block == $currentClass) {
                         $currentClass = '';
+                    }
+
+                    else if ($block == $currentFunction) {
+                        $currentFunction = '';
                     }
                 }
 
