@@ -61,6 +61,14 @@ class PHPDCD_TextUI_ResultPrinter
      */
     public function printResult(array $result, $commonPath)
     {
+        foreach ($result as $name => $source) {
+            printf(
+              "\n  - %s\n    declared in %s:%d\n",
+              $name,
+              str_replace($commonPath, '', $source['file']),
+              $source['line']
+            );
+        }
     }
 }
 ?>

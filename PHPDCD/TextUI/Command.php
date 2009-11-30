@@ -218,7 +218,7 @@ EOT;
      */
     protected static function printVersionString()
     {
-        print "phpdcd @package_version@ by Sebastian Bergmann.\n\n";
+        print "phpdcd @package_version@ by Sebastian Bergmann.\n";
     }
 }
 ?>
