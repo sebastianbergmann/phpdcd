@@ -189,6 +189,8 @@ class PHPDCD_Detector
             }
         }
 
+        ksort($result);
+
         return $result;
     }
 }
