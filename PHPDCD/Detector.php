@@ -183,10 +183,10 @@ class PHPDCD_Detector
                     }
 
                     if (!isset($called[$function])) {
-                        $called[$function] = 1;
-                    } else {
-                        $called[$function]++;
+                        $called[$function] = array();
                     }
+
+                    $called[$function][] = $currentFunction;
                 }
             }
         }
