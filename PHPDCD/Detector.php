@@ -56,10 +56,11 @@ require_once 'PHP/Token/Stream.php';
 class PHPDCD_Detector
 {
     /**
-     * @param  array $files
+     * @param  array   $files
+     * @param  boolean $recursive
      * @return array
      */
-    public function detectDeadCode(array $files)
+    public function detectDeadCode(array $files, $recursive = FALSE)
     {
         $blocks          = array();
         $called          = array();
@@ -189,6 +190,32 @@ class PHPDCD_Detector
         foreach ($declared as $name => $source) {
             if (!isset($called[$name])) {
                 $result[$name] = $source;
+            }
+        }
+
+        if ($recursive) {
+            $done = FALSE;
+
+            while (!$done) {
+                $done = TRUE;
+
+                foreach ($called as $callee => $callers) {
+                    $_called = FALSE;
+
+                    foreach ($callers as $caller) {
+                        if (!isset($result[$caller])) {
+                            $_called = TRUE;
+                            break;
+                        }
+                    }
+
+                    if (!$_called) {
+                        $result[$callee] = $declared[$callee];
+                        $done            = FALSE;
+
+                        unset($called[$callee]);
+                    }
+                }
             }
         }
 

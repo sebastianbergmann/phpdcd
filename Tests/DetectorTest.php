@@ -97,7 +97,42 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
             )
           ),
           $this->detector->detectDeadCode(
-            array(TEST_FILES_PATH . 'declarations.php')
+            array(TEST_FILES_PATH . 'declarations.php'), FALSE
+          )
+        );
+    }
+
+    /**
+     * @covers  PHPDCD_Detector::detectDeadCode
+     * @depends testDetectingDeclaredFunctionsAndMethodsWorks
+     */
+    public function testDetectingDeclaredFunctionsAndMethodsWorks2()
+    {
+        $this->assertEquals(
+          array(
+            'AClass::aMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 8
+            ),
+            'AClass::aStaticMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 4
+            ),
+            'a_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 13
+            ),
+            'another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 18
+            ),
+            'yet_another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 22
+            )
+          ),
+          $this->detector->detectDeadCode(
+            array(TEST_FILES_PATH . 'declarations.php'), TRUE
           )
         );
     }

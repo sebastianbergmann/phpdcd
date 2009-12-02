@@ -70,6 +70,7 @@ class PHPDCD_TextUI_Command
               array(
                 'help',
                 'exclude=',
+                'recursive',
                 'suffixes=',
                 'version'
               )
@@ -80,13 +81,19 @@ class PHPDCD_TextUI_Command
             self::showError($e->getMessage());
         }
 
-        $exclude  = array();
-        $suffixes = array('php');
+        $exclude   = array();
+        $suffixes  = array('php');
+        $recursive = FALSE;
 
         foreach ($options[0] as $option) {
             switch ($option[0]) {
                 case '--exclude': {
                     $exclude[] = $option[1];
+                }
+                break;
+
+                case '--recursive': {
+                    $recursive = TRUE;
                 }
                 break;
 
@@ -122,7 +129,7 @@ class PHPDCD_TextUI_Command
         self::printVersionString();
 
         $detector = new PHPDCD_Detector;
-        $result   = $detector->detectDeadCode($files);
+        $result   = $detector->detectDeadCode($files, $recursive);
 
         $printer = new PHPDCD_TextUI_ResultPrinter;
         $printer->printResult($result, self::getCommonPath($files));
@@ -204,11 +211,13 @@ class PHPDCD_TextUI_Command
         print <<<EOT
 Usage: phpdcd [switches] <directory|file> ...
 
-  --exclude <directory>    Exclude <directory> from code analysis.
-  --suffixes <suffix,...>  A comma-separated list of file suffixes to check.
+  --recursive          Report code as dead if it is only called by dead code.
 
-  --help                   Prints this usage information.
-  --version                Prints the version and exits.
+  --exclude <dir>      Exclude <dir> from code analysis.
+  --suffixes <suffix>  A comma-separated list of file suffixes to check.
+
+  --help               Prints this usage information.
+  --version            Prints the version and exits.
 
 EOT;
     }
