@@ -76,11 +76,11 @@ class PHPDCD_Detector
 
             for ($i = 0; $i < $count; $i++) {
                 if ($tokens[$i] instanceof PHP_Token_NAMESPACE) {
-                    $namespace = $tokens[$i]->getNamespaceName();
+                    $namespace = $tokens[$i]->getName();
                 }
 
                 else if ($tokens[$i] instanceof PHP_Token_CLASS) {
-                    $currentClass = $tokens[$i]->getClassName();
+                    $currentClass = $tokens[$i]->getName();
 
                     if ($namespace != '') {
                         $currentClass = $namespace . '\\' . $currentClass;
