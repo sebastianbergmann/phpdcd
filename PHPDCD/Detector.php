@@ -126,6 +126,12 @@ class PHPDCD_Detector
                 }
 
                 else if ($tokens[$i] instanceof PHP_Token_OPEN_BRACKET) {
+                    for ($j = 1; $j <= 4; $j++) {
+                        if ($tokens[$i-$j] instanceof PHP_Token_FUNCTION) {
+                            continue 2;
+                        }
+                    }
+
                     if ($tokens[$i-1] instanceof PHP_Token_STRING) {
                         $j = -1;
                     }
