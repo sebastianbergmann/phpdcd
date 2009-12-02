@@ -63,7 +63,7 @@ class PHPDCD_TextUI_ResultPrinter
     {
         foreach ($result as $name => $source) {
             printf(
-              "\n  - %s\n    declared in %s:%d\n",
+              "\n  - %s()\n    declared in %s:%d\n",
               $name,
               str_replace($commonPath, '', $source['file']),
               $source['line']
