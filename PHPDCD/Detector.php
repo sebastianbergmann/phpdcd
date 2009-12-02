@@ -89,13 +89,11 @@ class PHPDCD_Detector
                     $currentBlock = $currentClass;
                 }
 
-                else if ($tokens[$i] instanceof PHP_Token_FUNCTION &&
-                         !$tokens[$i+1] instanceof PHP_Token_OPEN_BRACKET &&
-                         !$tokens[$i+2] instanceof PHP_Token_OPEN_BRACKET) {
-                    if ($tokens[$i+2] instanceof PHP_Token_STRING) {
-                        $function = (string)$tokens[$i+2];
-                    } else {
-                        $function = (string)$tokens[$i+3];
+                else if ($tokens[$i] instanceof PHP_Token_FUNCTION) {
+                    $function = $tokens[$i]->getName();
+
+                    if ($function == 'anonymous function') {
+                        continue;
                     }
 
                     if ($currentClass != '') {
