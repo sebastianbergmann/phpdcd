@@ -42,9 +42,9 @@
  */
 
 require_once 'File/Iterator/Factory.php';
-require 'PHPDCD/Detector.php';
-require 'PHPDCD/TextUI/Getopt.php';
-require 'PHPDCD/TextUI/ResultPrinter.php';
+require_once 'PHPDCD/Detector.php';
+require_once 'PHPDCD/TextUI/Getopt.php';
+require_once 'PHPDCD/TextUI/ResultPrinter.php';
 
 /**
  * TextUI frontend for PHPDCD.
