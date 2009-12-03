@@ -70,6 +70,7 @@ class PHPDCD_Detector
         $declared        = array();
         $namespace       = '';
         $result          = array();
+        $variables       = array();
 
         foreach ($files as $file) {
             $tokens = new PHP_Token_Stream($file);
@@ -90,12 +91,47 @@ class PHPDCD_Detector
                     $currentBlock = $currentClass;
                 }
 
+                else if ($tokens[$i] instanceof PHP_Token_NEW &&
+                         !$tokens[$i+2] instanceof PHP_Token_VARIABLE) {
+                    if ($tokens[$i-1] instanceof PHP_Token_EQUAL) {
+                        $j = -1;
+                    }
+
+                    else if ($tokens[$i-1] instanceof PHP_Token_WHITESPACE &&
+                             $tokens[$i-2] instanceof PHP_Token_EQUAL) {
+                        $j = -2;
+                    }
+
+                    else {
+                        continue;
+                    }
+
+                    if ($tokens[$i+$j-1] instanceof PHP_Token_WHITESPACE) {
+                        $j--;
+                    }
+
+                    if ($tokens[$i+$j-1] instanceof PHP_Token_VARIABLE) {
+                        $name             = (string)$tokens[$i+$j-1];
+                        $variables[$name] = (string)$tokens[$i+2];
+                    }
+
+                    else if ($tokens[$i+$j-1] instanceof PHP_Token_STRING &&
+                             $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR &&
+                             $tokens[$i+$j-3] instanceof PHP_Token_VARIABLE) {
+                        $name             = (string)$tokens[$i+$j-3] . '->' .
+                                            (string)$tokens[$i+$j-1];
+                        $variables[$name] = (string)$tokens[$i+2];
+                    }
+                }
+
                 else if ($tokens[$i] instanceof PHP_Token_FUNCTION) {
                     $function = $tokens[$i]->getName();
 
                     if ($function == 'anonymous function') {
                         continue;
                     }
+
+                    $variables = $tokens[$i]->getArguments();
 
                     if ($currentClass != '') {
                         $function = $currentClass . '::' . $function;
@@ -123,6 +159,7 @@ class PHPDCD_Detector
 
                     else if ($block == $currentFunction) {
                         $currentFunction = '';
+                        $variables       = array();
                     }
                 }
 
@@ -155,9 +192,32 @@ class PHPDCD_Detector
 
                     else if ($tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR ||
                              $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR) {
+                        $_function        = $tokens[$i+$j];
                         $lookForNamespace = FALSE;
 
-                        // TODO: Try to resolve object to class.
+                        if ($tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR) {
+                            $j -= 2;
+                        } else {
+                            $j -= 3;
+                        }
+
+                        if ($tokens[$i+$j] instanceof PHP_Token_VARIABLE &&
+                            isset($variables[(string)$tokens[$i+$j]])) {
+                            $function = $variables[(string)$tokens[$i+$j]] .
+                                        '::' . $_function;
+                        }
+
+                        else if ($tokens[$i+$j] instanceof PHP_Token_STRING &&
+                                 $tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR &&
+                                 $tokens[$i+$j-2] instanceof PHP_Token_VARIABLE) {
+                            $variable = (string)$tokens[$i+$j-2] . '->' .
+                                        (string)$tokens[$i+$j];
+
+                            if (isset($variables[$variable])) {
+                                $function = $variables[$variable] . '::' .
+                                            $_function;
+                            }
+                        }
                     }
 
                     else if ($tokens[$i+$j-1] instanceof PHP_Token_DOUBLE_COLON) {
