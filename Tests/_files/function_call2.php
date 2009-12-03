@@ -1,0 +1,2 @@
+<?php
+a_function();

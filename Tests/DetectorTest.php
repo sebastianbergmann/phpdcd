@@ -136,4 +136,264 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
           )
         );
     }
+
+    /**
+     * @covers  PHPDCD_Detector::detectDeadCode
+     * @depends testDetectingDeclaredFunctionsAndMethodsWorks
+     */
+    public function testDetectingFunctionCallsWorks()
+    {
+        $this->assertEquals(
+          array(
+            'AClass::aMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 8
+            ),
+            'AClass::aStaticMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 4
+            ),
+            'a_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 13
+            ),
+          ),
+          $this->detector->detectDeadCode(
+            array(
+              TEST_FILES_PATH . 'declarations.php',
+              TEST_FILES_PATH . 'function_call.php',
+            ),
+            FALSE
+          )
+        );
+    }
+
+    /**
+     * @covers  PHPDCD_Detector::detectDeadCode
+     * @depends testDetectingFunctionCallsWorks
+     */
+    public function testDetectingFunctionCallsWorks2()
+    {
+        $this->assertEquals(
+          array(
+            'AClass::aMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 8
+            ),
+            'AClass::aStaticMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 4
+            ),
+            'a_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 13
+            ),
+            'another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 18
+            ),
+          ),
+          $this->detector->detectDeadCode(
+            array(
+              TEST_FILES_PATH . 'declarations.php',
+              TEST_FILES_PATH . 'function_call.php',
+            ),
+            TRUE
+          )
+        );
+    }
+
+    /**
+     * @covers  PHPDCD_Detector::detectDeadCode
+     * @depends testDetectingFunctionCallsWorks
+     */
+    public function testDetectingFunctionCallsWorks3()
+    {
+        $this->assertEquals(
+          array(
+            'AClass::aMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 8
+            ),
+            'AClass::aStaticMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 4
+            ),
+            'yet_another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 22
+            )
+          ),
+          $this->detector->detectDeadCode(
+            array(
+              TEST_FILES_PATH . 'declarations.php',
+              TEST_FILES_PATH . 'function_call2.php',
+            ),
+            FALSE
+          )
+        );
+    }
+
+    /**
+     * @covers  PHPDCD_Detector::detectDeadCode
+     * @depends testDetectingFunctionCallsWorks3
+     */
+    public function testDetectingFunctionCallsWorks4()
+    {
+        $this->assertEquals(
+          array(
+            'AClass::aMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 8
+            ),
+            'AClass::aStaticMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 4
+            ),
+            'yet_another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 22
+            )
+          ),
+          $this->detector->detectDeadCode(
+            array(
+              TEST_FILES_PATH . 'declarations.php',
+              TEST_FILES_PATH . 'function_call2.php',
+            ),
+            TRUE
+          )
+        );
+    }
+
+    /**
+     * @covers  PHPDCD_Detector::detectDeadCode
+     * @depends testDetectingDeclaredFunctionsAndMethodsWorks
+     */
+    public function testDetectingStaticMethodCallsWorks()
+    {
+        $this->assertEquals(
+          array(
+            'AClass::aMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 8
+            ),
+            'a_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 13
+            ),
+            'yet_another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 22
+            )
+          ),
+          $this->detector->detectDeadCode(
+            array(
+              TEST_FILES_PATH . 'declarations.php',
+              TEST_FILES_PATH . 'static_method_call.php',
+            ),
+            FALSE
+          )
+        );
+    }
+
+    /**
+     * @covers  PHPDCD_Detector::detectDeadCode
+     * @depends testDetectingStaticMethodCallsWorks
+     */
+    public function testDetectingStaticMethodCallsWorks2()
+    {
+        $this->assertEquals(
+          array(
+            'AClass::aMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 8
+            ),
+            'a_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 13
+            ),
+            'another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 18
+            ),
+            'yet_another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 22
+            )
+          ),
+          $this->detector->detectDeadCode(
+            array(
+              TEST_FILES_PATH . 'declarations.php',
+              TEST_FILES_PATH . 'static_method_call.php',
+            ),
+            TRUE
+          )
+        );
+    }
+
+    /**
+     * @covers  PHPDCD_Detector::detectDeadCode
+     * @depends testDetectingDeclaredFunctionsAndMethodsWorks
+     */
+    public function testDetectingMethodCallsWorks()
+    {
+        $this->assertEquals(
+          array(
+            'AClass::aStaticMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 4
+            ),
+            'a_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 13
+            ),
+            'yet_another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 22
+            )
+          ),
+          $this->detector->detectDeadCode(
+            array(
+              TEST_FILES_PATH . 'declarations.php',
+              TEST_FILES_PATH . 'method_call.php',
+            ),
+            FALSE
+          )
+        );
+    }
+
+    /**
+     * @covers  PHPDCD_Detector::detectDeadCode
+     * @depends testDetectingMethodCallsWorks
+     */
+    public function testDetectingMethodCallsWorks2()
+    {
+        $this->assertEquals(
+          array(
+            'AClass::aStaticMethod' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 4
+            ),
+            'a_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 13
+            ),
+            'another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 18
+            ),
+            'yet_another_function' => array(
+              'file' => TEST_FILES_PATH . 'declarations.php',
+              'line' => 22
+            )
+          ),
+          $this->detector->detectDeadCode(
+            array(
+              TEST_FILES_PATH . 'declarations.php',
+              TEST_FILES_PATH . 'method_call.php',
+            ),
+            TRUE
+          )
+        );
+    }
 }
