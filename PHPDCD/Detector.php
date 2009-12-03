@@ -165,7 +165,8 @@ class PHPDCD_Detector
 
                 else if ($tokens[$i] instanceof PHP_Token_OPEN_BRACKET) {
                     for ($j = 1; $j <= 4; $j++) {
-                        if ($tokens[$i-$j] instanceof PHP_Token_FUNCTION) {
+                        if (isset($tokens[$i-$j]) &&
+                            $tokens[$i-$j] instanceof PHP_Token_FUNCTION) {
                             continue 2;
                         }
                     }
@@ -186,12 +187,15 @@ class PHPDCD_Detector
                     $function         = (string)$tokens[$i+$j];
                     $lookForNamespace = TRUE;
 
-                    if ($tokens[$i+$j-2] instanceof PHP_Token_NEW) {
+                    if (isset($tokens[$i+$j-2]) &&
+                        $tokens[$i+$j-2] instanceof PHP_Token_NEW) {
                         $function .= '::__construct';
                     }
 
-                    else if ($tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR ||
-                             $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR) {
+                    else if ((isset($tokens[$i+$j-1]) &&
+                              $tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR) ||
+                             (isset($tokens[$i+$j-2]) &&
+                              $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR)) {
                         $_function        = $tokens[$i+$j];
                         $lookForNamespace = FALSE;
 
