@@ -1,9 +1,19 @@
 phpdcd
 ======
 
-**phpdcd** is a Dead Code Detector (DCD) for PHP code.
+**phpdcd** is a Dead Code Detector (DCD) for PHP code. It scans a PHP project for all declared functions and methods and reports those as being "dead code" that are not called at least once.
 
-The goal of **phpdcd** is not not to replace more sophisticated tools such as [phpcs](http://pear.php.net/PHP_CodeSniffer), [pdepend](http://pdepend.org/), or [phpmd](http://phpmd.org/), but rather to provide an alternative to them when you just need to get a quick overview of unused code in a project.
+Limitations
+-----------
+
+As PHP is a very dynamic programming language, the static analysis performed by **phpdcd** does not recognize function or method calls that are performed using one of the following language features:
+
+* Reflection API
+* `call_user_func()` and `call_user_func_array()`
+* Usage of the `new` operator with variable class names
+* Variable class names for static method calls such as `$class::method()`
+* Variable function or method names such as `$function()` or `$object->$method()`
+* Infering the type of a variable is limited to type-hinted arguments (`function foo(Bar $bar) {}`) and direct object creation (`$object = new Clazz`)
 
 Installation
 ------------
