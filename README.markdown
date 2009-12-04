@@ -32,9 +32,13 @@ This has to be done only once. Now the PEAR Installer can be used to install pac
     downloading phpdcd-0.9.0.tgz ...
     Starting to download phpdcd-0.9.0.tgz (6,235 bytes)
     .....done: 6,235 bytes
+    downloading File_Iterator-1.1.0.tgz ...
+    Starting to download File_Iterator-1.1.0.tgz (3,181 bytes)
+    ...done: 3,181 bytes
     downloading PHP_TokenStream-0.9.0.tgz ...
     Starting to download PHP_TokenStream-0.9.0.tgz (5,145 bytes)
     ...done: 5,145 bytes
+    install ok: channel://pear.phpunit.de/File_Iterator-1.1.0
     install ok: channel://pear.phpunit.de/PHP_TokenStream-0.9.0
     install ok: channel://pear.phpunit.de/phpdcd-0.9.0
 
