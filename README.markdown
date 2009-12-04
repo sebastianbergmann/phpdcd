@@ -28,6 +28,14 @@ The PEAR channel (`pear.phpunit.de`) that is used to distribute phpdcd needs to 
 
 This has to be done only once. Now the PEAR Installer can be used to install packages from the PHPUnit channel:
 
-    sb@ubuntu ~ % pear install phpunit/phpdcd
+    sb@ubuntu ~ % pear install phpunit/phpdcd-beta
+    downloading phpdcd-0.9.0.tgz ...
+    Starting to download phpdcd-0.9.0.tgz (6,235 bytes)
+    .....done: 6,235 bytes
+    downloading PHP_TokenStream-0.9.0.tgz ...
+    Starting to download PHP_TokenStream-0.9.0.tgz (5,145 bytes)
+    ...done: 5,145 bytes
+    install ok: channel://pear.phpunit.de/PHP_TokenStream-0.9.0
+    install ok: channel://pear.phpunit.de/phpdcd-0.9.0
 
 After the installation you can find the phpdcd source files inside your local PEAR directory; the path is usually `/usr/lib/php/PHPDCD`.
