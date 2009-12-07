@@ -12,7 +12,7 @@ class AClass
 
 function a_function()
 {
-    another_function()
+    another_function();
 }
 
 function another_function()
