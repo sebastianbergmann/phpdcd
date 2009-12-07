@@ -251,6 +251,8 @@ class PHPDCD_Detector
             }
         }
 
+        unset($tokens, $count);
+
         foreach ($declared as $name => $source) {
             if (!isset($called[$name])) {
                 $result[$name] = $source;
