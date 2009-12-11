@@ -13,7 +13,9 @@ As PHP is a very dynamic programming language, the static analysis performed by 
 * Usage of the `new` operator with variable class names
 * Variable class names for static method calls such as `$class::method()`
 * Variable function or method names such as `$function()` or `$object->$method()`
-* Infering the type of a variable is limited to type-hinted arguments (`function foo(Bar $bar) {}`) and direct object creation (`$object = new Clazz`)
+* Automatic calls to methods such as `__toString()` or `Iterator::*()`
+
+Also note that infering the type of a variable is limited to type-hinted arguments (`function foo(Bar $bar) {}`) and direct object creation (`$object = new Clazz`)
 
 Installation
 ------------
