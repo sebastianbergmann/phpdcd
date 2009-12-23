@@ -62,15 +62,16 @@ class PHPDCD_Detector
      */
     public function detectDeadCode(array $files, $recursive = FALSE)
     {
-        $blocks          = array();
-        $called          = array();
-        $currentBlock    = NULL;
-        $currentClass    = '';
-        $currentFunction = '';
-        $declared        = array();
-        $namespace       = '';
-        $result          = array();
-        $variables       = array();
+        $blocks           = array();
+        $called           = array();
+        $currentBlock     = NULL;
+        $currentClass     = '';
+        $currentFunction  = '';
+        $currentInterface = '';
+        $declared         = array();
+        $namespace        = '';
+        $result           = array();
+        $variables        = array();
 
         foreach ($files as $file) {
             $tokens = new PHP_Token_Stream($file);
@@ -89,6 +90,16 @@ class PHPDCD_Detector
                     }
 
                     $currentBlock = $currentClass;
+                }
+
+                else if ($tokens[$i] instanceof PHP_Token_INTERFACE) {
+                    $currentInterface = $tokens[$i]->getName();
+
+                    if ($namespace != '') {
+                        $currentInterface = $namespace . '\\' . $currentClass;
+                    }
+
+                    $currentBlock = $currentInterface;
                 }
 
                 else if ($tokens[$i] instanceof PHP_Token_NEW &&
@@ -125,6 +136,10 @@ class PHPDCD_Detector
                 }
 
                 else if ($tokens[$i] instanceof PHP_Token_FUNCTION) {
+                    if ($currentInterface != '') {
+                        continue;
+                    }
+
                     $function = $tokens[$i]->getName();
 
                     if ($function == 'anonymous function') {
