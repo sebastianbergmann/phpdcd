@@ -43,8 +43,14 @@
 
 require_once 'File/Iterator/Factory.php';
 require_once 'PHPDCD/Detector.php';
-require_once 'PHPDCD/TextUI/Getopt.php';
 require_once 'PHPDCD/TextUI/ResultPrinter.php';
+
+require_once 'ezc/Base/base.php';
+
+function __autoload($className)
+{
+    ezcBase::autoload($className);
+}
 
 /**
  * TextUI frontend for PHPDCD.
@@ -63,63 +69,114 @@ class PHPDCD_TextUI_Command
      */
     public static function main()
     {
+        $input  = new ezcConsoleInput;
+        $output = new ezcConsoleOutput;
+
+        $input->registerOption(
+          new ezcConsoleOption(
+            '',
+            'exclude',
+            ezcConsoleInput::TYPE_STRING,
+            array(),
+            TRUE
+           )
+        );
+
+        $input->registerOption(
+          new ezcConsoleOption(
+            'h',
+            'help',
+            ezcConsoleInput::TYPE_NONE,
+            NULL,
+            FALSE,
+            '',
+            '',
+            array(),
+            array(),
+            FALSE,
+            FALSE,
+            TRUE
+           )
+        );
+
+        $input->registerOption(
+          new ezcConsoleOption(
+            '',
+            'recursive',
+            ezcConsoleInput::TYPE_NONE
+           )
+        );
+
+        $input->registerOption(
+          new ezcConsoleOption(
+            '',
+            'suffixes',
+            ezcConsoleInput::TYPE_STRING,
+            'php',
+            FALSE
+           )
+        );
+
+        $input->registerOption(
+          new ezcConsoleOption(
+            'v',
+            'version',
+            ezcConsoleInput::TYPE_NONE,
+            NULL,
+            FALSE,
+            '',
+            '',
+            array(),
+            array(),
+            FALSE,
+            FALSE,
+            TRUE
+           )
+        );
+
+        $input->registerOption(
+          new ezcConsoleOption(
+            '',
+            'verbose',
+            ezcConsoleInput::TYPE_NONE
+           )
+        );
+
         try {
-            $options = PHPDCD_TextUI_Getopt::getopt(
-              $_SERVER['argv'],
-              '',
-              array(
-                'help',
-                'exclude=',
-                'recursive',
-                'suffixes=',
-                'version'
-              )
-            );
+            $input->process();
         }
 
-        catch (RuntimeException $e) {
-            self::showError($e->getMessage());
+        catch (ezcConsoleOptionException $e) {
+            print $e->getMessage() . "\n";
+            exit(1);
         }
 
-        $exclude   = array();
-        $suffixes  = array('php');
-        $recursive = FALSE;
-
-        foreach ($options[0] as $option) {
-            switch ($option[0]) {
-                case '--exclude': {
-                    $exclude[] = $option[1];
-                }
-                break;
-
-                case '--recursive': {
-                    $recursive = TRUE;
-                }
-                break;
-
-                case '--suffixes': {
-                    $suffixes = explode(',', $option[1]);
-                    array_map('trim', $suffixes);
-                }
-                break;
-
-                case '--help': {
-                    self::showHelp();
-                    exit(0);
-                }
-                break;
-
-                case '--version': {
-                    self::printVersionString();
-                    exit(0);
-                }
-                break;
-            }
+        if ($input->getOption('help')->value) {
+            self::showHelp();
+            exit(0);
         }
 
-        if (isset($options[1][0])) {
+        else if ($input->getOption('version')->value) {
+            self::printVersionString();
+            exit(0);
+        }
+
+        $arguments  = $input->getArguments();
+        $exclude    = $input->getOption('exclude')->value;
+        $recursive  = $input->getOption('recursive')->value;
+
+        $suffixes = explode(',', $input->getOption('suffixes')->value);
+        array_map('trim', $suffixes);
+
+        if ($input->getOption('verbose')->value !== FALSE) {
+            $verbose = $output;
+        } else {
+            $verbose = NULL;
+        }
+
+        if (!empty($arguments)) {
             $files = File_Iterator_Factory::getFilesAsArray(
-              $options[1], $suffixes, array(), $exclude
+              $arguments, $suffixes, array(), $exclude
             );
         } else {
             self::showHelp();
@@ -128,7 +185,7 @@ class PHPDCD_TextUI_Command
 
         self::printVersionString();
 
-        $detector = new PHPDCD_Detector;
+        $detector = new PHPDCD_Detector($verbose);
         $result   = $detector->detectDeadCode($files, $recursive);
 
         $printer = new PHPDCD_TextUI_ResultPrinter;
@@ -218,6 +275,8 @@ Usage: phpdcd [switches] <directory|file> ...
 
   --help               Prints this usage information.
   --version            Prints the version and exits.
+
+  --verbose            Print progress bar.
 
 EOT;
     }

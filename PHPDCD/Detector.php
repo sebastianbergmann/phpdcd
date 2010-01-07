@@ -56,6 +56,21 @@ require_once 'PHP/Token/Stream.php';
 class PHPDCD_Detector
 {
     /**
+     * @var ezcConsoleOutput
+     */
+    protected $output;
+
+    /**
+     * Constructor.
+     *
+     * @param ezcConsoleOutput $output
+     */
+    public function __construct(ezcConsoleOutput $output = NULL)
+    {
+        $this->output = $output;
+    }
+
+    /**
      * @param  array   $files
      * @param  boolean $recursive
      * @return array
@@ -72,6 +87,11 @@ class PHPDCD_Detector
         $namespace        = '';
         $result           = array();
         $variables        = array();
+
+        if ($this->output !== NULL) {
+            $bar = new ezcConsoleProgressbar($this->output, count($files));
+            print "\nProcessing files\n";
+        }
 
         foreach ($files as $file) {
             $tokens = new PHP_Token_Stream($file);
@@ -264,6 +284,10 @@ class PHPDCD_Detector
                     $called[$function][] = $currentFunction;
                 }
             }
+
+            if ($this->output !== NULL) {
+                $bar->advance();
+            }
         }
 
         unset($tokens, $count);
@@ -301,6 +325,10 @@ class PHPDCD_Detector
         }
 
         ksort($result);
+
+        if ($this->output !== NULL) {
+            print "\n";
+        }
 
         return $result;
     }

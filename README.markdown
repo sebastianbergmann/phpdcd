@@ -22,26 +22,37 @@ Installation
 
 phpdcd should be installed using the [PEAR Installer](http://pear.php.net/). This installer is the backbone of PEAR, which provides a distribution system for PHP packages, and is shipped with every release of PHP since version 4.3.0.
 
-The PEAR channel (`pear.phpunit.de`) that is used to distribute phpdcd needs to be registered with the local PEAR environment:
+The PEAR channel (`pear.phpunit.de`) that is used to distribute phpdcd needs to be registered with the local PEAR environment. Furthermore, a component that phpdcd depends upon is hosted on the eZ Components PEAR channel (`components.ez.no`).
 
     sb@ubuntu ~ % pear channel-discover pear.phpunit.de
     Adding Channel "pear.phpunit.de" succeeded
     Discovery of channel "pear.phpunit.de" succeeded
 
+    sb@ubuntu ~ % pear channel-discover components.ez.no
+    Adding Channel "components.ez.no" succeeded
+    Discovery of channel "components.ez.no" succeeded
+
 This has to be done only once. Now the PEAR Installer can be used to install packages from the PHPUnit channel:
 
     sb@ubuntu ~ % pear install phpunit/phpdcd-beta
-    downloading phpdcd-0.9.1.tgz ...
-    Starting to download phpdcd-0.9.1.tgz (6,046 bytes)
-    .....done: 6,046 bytes
+    downloading phpdcd-0.9.2.tgz ...
+    Starting to download phpdcd-0.9.2.tgz (5,674 bytes)
+    .....done: 5,674 bytes
     downloading File_Iterator-1.1.0.tgz ...
     Starting to download File_Iterator-1.1.0.tgz (3,181 bytes)
     ...done: 3,181 bytes
-    downloading PHP_TokenStream-0.9.1.tgz ...
-    Starting to download PHP_TokenStream-0.9.1.tgz (5,113 bytes)
-    ...done: 5,113 bytes
+    downloading ConsoleTools-1.6.tgz ...
+    Starting to download ConsoleTools-1.6.tgz (869,925 bytes)
+    .........................................................
+    .........................................................
+    .........................................................
+    ..done: 869,925 bytes
+    downloading Base-1.8.tgz ...
+    Starting to download Base-1.8.tgz (236,357 bytes)
+    ...done: 236,357 bytes
+    install ok: channel://components.ez.no/Base-1.8
+    install ok: channel://components.ez.no/ConsoleTools-1.6
     install ok: channel://pear.phpunit.de/File_Iterator-1.1.0
-    install ok: channel://pear.phpunit.de/PHP_TokenStream-0.9.1
-    install ok: channel://pear.phpunit.de/phpdcd-0.9.1
+    install ok: channel://pear.phpunit.de/phpdcd-0.9.2
 
 After the installation you can find the phpdcd source files inside your local PEAR directory; the path is usually `/usr/lib/php/PHPDCD`.
