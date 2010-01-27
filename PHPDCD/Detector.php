@@ -315,8 +315,11 @@ class PHPDCD_Detector
                     }
 
                     if (!$_called) {
-                        $result[$callee] = $declared[$callee];
-                        $done            = FALSE;
+                        if (isset($declared[$callee])) {
+                            $result[$callee] = $declared[$callee];
+                        }
+
+                        $done = FALSE;
 
                         unset($called[$callee]);
                     }
