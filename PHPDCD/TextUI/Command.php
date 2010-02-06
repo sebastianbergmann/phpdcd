@@ -183,8 +183,8 @@ class PHPDCD_TextUI_Command
             exit(1);
         }
 
-        if (count($files) == 0) {
-        	self::showError("No files found to scan.\n");
+        if (empty($files)) {
+            self::showError("No files found to scan.\n");
         }
         
         self::printVersionString();
