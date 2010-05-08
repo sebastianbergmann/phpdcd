@@ -41,6 +41,8 @@
  * @since     File available since Release 1.0.0
  */
 
+require_once 'PHP/Timer.php';
+
 /**
  * A ResultPrinter for the TextUI.
  *
@@ -69,6 +71,8 @@ class PHPDCD_TextUI_ResultPrinter
               $source['line']
             );
         }
+
+        print "\n" . PHP_Timer::resourceUsage() . "\n";
     }
 }
 ?>
