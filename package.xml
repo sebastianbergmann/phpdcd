@@ -17,14 +17,14 @@
   <email>sb@sebastian-bergmann.de</email>
   <active>yes</active>
  </lead>
- <date>2010-01-07</date>
+ <date>201Y-MM-DD</date>
  <version>
-  <release>0.9.2</release>
-  <api>0.9.2</api>
+  <release>1.0.0</release>
+  <api>1.0.0</api>
  </version>
  <stability>
-  <release>beta</release>
-  <api>beta</api>
+  <release>stable</release>
+  <api>stable</api>
  </stability>
  <license>BSD License</license>
  <notes>http://github.com/sebastianbergmann/phpdcd/tree</notes>
@@ -39,6 +39,9 @@
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
     </dir>
+    <file baseinstalldir="/" name="Autoload.php" role="php">
+     <tasks:replace from="@package_version@" to="version" type="package-info" />
+    </file>
     <file baseinstalldir="/" name="Detector.php" role="php">
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
@@ -58,25 +61,25 @@
  <dependencies>
   <required>
    <php>
-    <min>5.2.0</min>
+    <min>5.2.7</min>
    </php>
    <pearinstaller>
-    <min>1.8.1</min>
+    <min>1.9.1</min>
    </pearinstaller>
    <package>
     <name>File_Iterator</name>
     <channel>pear.phpunit.de</channel>
-    <min>1.1.0</min>
+    <min>1.3.0</min>
    </package>
    <package>
     <name>PHP_Timer</name>
     <channel>pear.phpunit.de</channel>
-    <min>1.0.0</min>
+    <min>1.1.0</min>
    </package>
    <package>
     <name>PHP_TokenStream</name>
     <channel>pear.phpunit.de</channel>
-    <min>0.9.1</min>
+    <min>1.1.0</min>
    </package>
    <package>
     <name>ConsoleTools</name>

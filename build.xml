@@ -1,0 +1,7 @@
+<project name="phpdcd" default="phpab" basedir=".">
+ <target name="phpab">
+  <exec executable="phpab">
+   <arg line='-o PHPDCD/Autoload.php -c -t PHPDCD/Autoload.php.in --indent "          " PHPDCD' />
+  </exec>
+ </target>
+</project>

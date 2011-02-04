@@ -41,35 +41,29 @@
  * @since     File available since Release 1.0.0
  */
 
-/**
- * A ResultPrinter for the TextUI.
- *
- * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright 2009-2011 Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @license   http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version   Release: @package_version@
- * @link      http://github.com/sebastianbergmann/phpdcd/tree
- * @since     Class available since Release 1.0.0
- */
-class PHPDCD_TextUI_ResultPrinter
-{
-    /**
-     * Prints a result set from PHPDCD_Detector::detectDeadCode().
-     *
-     * @param array  $result
-     * @param string $commonPath
-     */
-    public function printResult(array $result, $commonPath)
-    {
-        foreach ($result as $name => $source) {
-            printf(
-              "\n  - %s()\n    declared in %s:%d\n",
-              $name,
-              str_replace($commonPath, '', $source['file']),
-              $source['line']
-            );
-        }
+require_once 'File/Iterator/Autoload.php';
+require_once 'PHP/Token/Stream/Autoload.php';
+require_once 'PHP/Timer/Autoload.php';
+require_once 'ezc/Base/base.php';
 
-        print "\n" . PHP_Timer::resourceUsage() . "\n";
+function phpdcd_autoload($class) {
+    static $classes = NULL;
+    static $path = NULL;
+
+    if ($classes === NULL) {
+        $classes = array(
+          ___CLASSLIST___
+        );
+
+        $path = dirname(__FILE__);
+    }
+
+    $cn = strtolower($class);
+
+    if (isset($classes[$cn])) {
+        require $path . $classes[$cn];
     }
 }
+
+spl_autoload_register('phpdcd_autoload');
+spl_autoload_register(array('ezcBase', 'autoload'));

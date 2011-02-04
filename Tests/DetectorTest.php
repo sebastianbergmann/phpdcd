@@ -49,8 +49,6 @@ if (!defined('TEST_FILES_PATH')) {
     );
 }
 
-require_once 'PHPDCD/Detector.php';
-
 /**
  * Tests for the PHPDCD_Detector class.
  *

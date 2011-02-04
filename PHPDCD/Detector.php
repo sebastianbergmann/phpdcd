@@ -41,8 +41,6 @@
  * @since     File available since Release 1.0.0
  */
 
-require_once 'PHP/Token/Stream.php';
-
 /**
  * PHPDCD code analyser.
  *
@@ -336,4 +334,3 @@ class PHPDCD_Detector
         return $result;
     }
 }
-?>

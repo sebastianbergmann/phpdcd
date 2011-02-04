@@ -41,17 +41,6 @@
  * @since     File available since Release 1.0.0
  */
 
-require_once 'File/Iterator/Factory.php';
-require_once 'PHPDCD/Detector.php';
-require_once 'PHPDCD/TextUI/ResultPrinter.php';
-
-require_once 'ezc/Base/base.php';
-
-function __autoload($className)
-{
-    ezcBase::autoload($className);
-}
-
 /**
  * TextUI frontend for PHPDCD.
  *
@@ -293,4 +282,3 @@ EOT;
         print "phpdcd @package_version@ by Sebastian Bergmann.\n";
     }
 }
-?>
