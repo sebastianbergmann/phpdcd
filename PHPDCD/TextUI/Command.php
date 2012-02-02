@@ -153,6 +153,10 @@ class PHPDCD_TextUI_Command
         $arguments  = $input->getArguments();
         $exclude    = $input->getOption('exclude')->value;
         $recursive  = $input->getOption('recursive')->value;
+        $suffixes   = array_map(
+                        'trim',
+                        explode(',', $input->getOption('suffixes')->value)
+                      );
 
         if (is_array($exclude) && count($exclude) == 1 &&
             strpos($exclude[0], ',') !== FALSE) {
