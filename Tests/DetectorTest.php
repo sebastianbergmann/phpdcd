@@ -394,4 +394,16 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
           )
         );
     }
+
+    /**
+     * @covers PHPDCD_Detector::detectDeadCode
+     */
+    public function testThisIsHandledCorrectly()
+    {
+        $this->assertEmpty(
+          $this->detector->detectDeadCode(
+            array(TEST_FILES_PATH . 'issue_5.php'), FALSE
+          )
+        );
+    }
 }
