@@ -41,31 +41,32 @@
  * @since     File available since Release 1.0.0
  */
 
-require_once 'File/Iterator/Autoload.php';
+require_once 'Symfony/Component/Finder/Finder.php';
+require_once 'Symfony/Component/Finder/Glob.php';
+require_once 'Symfony/Component/Finder/Iterator/FileTypeFilterIterator.php';
+require_once 'Symfony/Component/Finder/Iterator/FilenameFilterIterator.php';
+require_once 'Symfony/Component/Finder/Iterator/RecursiveDirectoryIterator.php';
+require_once 'Symfony/Component/Finder/Iterator/ExcludeDirectoryFilterIterator.php';
+require_once 'Symfony/Component/Finder/SplFileInfo.php';
 require_once 'PHP/Token/Stream/Autoload.php';
 require_once 'PHP/Timer/Autoload.php';
 require_once 'ezc/Base/base.php';
 
-function phpdcd_autoload($class) {
-    static $classes = NULL;
-    static $path = NULL;
-
-    if ($classes === NULL) {
-        $classes = array(
-          'phpdcd_detector' => '/Detector.php',
+spl_autoload_register(
+    function($class) {
+        static $classes = null;
+        if ($classes === null) {
+            $classes = array(
+                'phpdcd_detector' => '/Detector.php',
           'phpdcd_textui_command' => '/TextUI/Command.php',
           'phpdcd_textui_resultprinter' => '/TextUI/ResultPrinter.php'
-        );
-
-        $path = dirname(__FILE__);
+            );
+        }
+        $cn = strtolower($class);
+        if (isset($classes[$cn])) {
+            require dirname(__FILE__) . $classes[$cn];
+        }
     }
+);
 
-    $cn = strtolower($class);
-
-    if (isset($classes[$cn])) {
-        require $path . $classes[$cn];
-    }
-}
-
-spl_autoload_register('phpdcd_autoload');
 spl_autoload_register(array('ezcBase', 'autoload'));

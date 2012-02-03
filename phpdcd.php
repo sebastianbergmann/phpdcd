@@ -48,4 +48,5 @@ if (strpos('@php_bin@', '@php_bin') === 0) {
 
 require 'PHPDCD/Autoload.php';
 
-PHPDCD_TextUI_Command::main();
+$textui = new PHPDCD_TextUI_Command;
+$textui->main();
