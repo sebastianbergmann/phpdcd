@@ -24,9 +24,11 @@ Installation
 
 Depending on your OS distribution and/or your PHP environment, you may need to install PEAR or update your existing PEAR installation before you can proceed with the following instructions. `sudo pear upgrade PEAR` usually suffices to upgrade an existing PEAR installation. The [PEAR Manual ](http://pear.php.net/manual/en/installation.getting.php) explains how to perform a fresh installation of PEAR.
 
+There is no stable release of PHPDCD: The last release is tagged as 0.9.3.
+
 The following two commands (which you may have to run as `root`) are all that is required to install `phpdcd` using the PEAR Installer:
 
     pear config-set auto_discover 1
-    pear install pear.phpunit.de/phpdcd
-
-After the installation you can find the `phpdcd` source files inside your local PEAR directory; the path is usually `/usr/lib/php/PHPDCD`.
+    pear install pear.phpunit.de/phpdcd-0.9.3
+    
+After the installation you can find the `phpdcd` source files inside your local PEAR directory; the path is usually `/usr/lib/php/PHPDCD` or `/usr/share/php/PHPDCD`
