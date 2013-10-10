@@ -69,11 +69,13 @@ class PHPDCD_Detector
     }
 
     /**
-     * @param  array   $files
-     * @param  boolean $recursive
-     * @return array
+     * Analyse PHP source code for defined and called functions
+     *
+     * @param string $input filename or PHP source code (see PHP_Token_Stream).
+     * @return list($declared, $called) with $declared: mapping function name to line number of declaration
+     * and $called: mapping called function to calling function
      */
-    public function detectDeadCode(array $files, $recursive = FALSE)
+    public function analyseSourceCode($input)
     {
         $blocks           = array();
         $called           = array();
@@ -83,204 +85,236 @@ class PHPDCD_Detector
         $currentInterface = '';
         $declared         = array();
         $namespace        = '';
-        $result           = array();
         $variables        = array();
+
+
+        $tokens = new PHP_Token_Stream($input);
+        $count  = count($tokens);
+
+        for ($i = 0; $i < $count; $i++) {
+            if ($tokens[$i] instanceof PHP_Token_NAMESPACE) {
+                $namespace = $tokens[$i]->getName();
+            }
+
+            else if ($tokens[$i] instanceof PHP_Token_CLASS) {
+                $currentClass = $tokens[$i]->getName();
+
+                if ($namespace != '') {
+                    $currentClass = $namespace . '\\' . $currentClass;
+                }
+
+                $currentBlock = $currentClass;
+            }
+
+            else if ($tokens[$i] instanceof PHP_Token_INTERFACE) {
+                $currentInterface = $tokens[$i]->getName();
+
+                if ($namespace != '') {
+                    $currentInterface = $namespace . '\\' . $currentClass;
+                }
+
+                $currentBlock = $currentInterface;
+            }
+
+            else if ($tokens[$i] instanceof PHP_Token_NEW &&
+                !$tokens[$i+2] instanceof PHP_Token_VARIABLE) {
+                if ($tokens[$i-1] instanceof PHP_Token_EQUAL) {
+                    $j = -1;
+                }
+
+                else if ($tokens[$i-1] instanceof PHP_Token_WHITESPACE &&
+                    $tokens[$i-2] instanceof PHP_Token_EQUAL) {
+                    $j = -2;
+                }
+
+                else {
+                    continue;
+                }
+
+                if ($tokens[$i+$j-1] instanceof PHP_Token_WHITESPACE) {
+                    $j--;
+                }
+
+                if ($tokens[$i+$j-1] instanceof PHP_Token_VARIABLE) {
+                    $name             = (string)$tokens[$i+$j-1];
+                    $variables[$name] = (string)$tokens[$i+2];
+                }
+
+                else if ($tokens[$i+$j-1] instanceof PHP_Token_STRING &&
+                    $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR &&
+                    $tokens[$i+$j-3] instanceof PHP_Token_VARIABLE) {
+                    $name             = (string)$tokens[$i+$j-3] . '->' .
+                        (string)$tokens[$i+$j-1];
+                    $variables[$name] = (string)$tokens[$i+2];
+                }
+            }
+
+            else if ($tokens[$i] instanceof PHP_Token_FUNCTION) {
+                if ($currentInterface != '') {
+                    continue;
+                }
+
+                $function = $tokens[$i]->getName();
+
+                if ($function == 'anonymous function') {
+                    continue;
+                }
+
+                $variables = $tokens[$i]->getArguments();
+
+                if ($currentClass != '') {
+                    $function = $currentClass . '::' . $function;
+                    $variables['$this'] = $currentClass;
+                }
+
+                $currentFunction = $function;
+                $currentBlock    = $currentFunction;
+
+                $declared[$function] = $tokens[$i]->getLine();
+            }
+
+            else if ($tokens[$i] instanceof PHP_Token_OPEN_CURLY) {
+                array_push($blocks, $currentBlock);
+                $currentBlock = NULL;
+            }
+
+            else if ($tokens[$i] instanceof PHP_Token_CLOSE_CURLY) {
+                $block = array_pop($blocks);
+
+                if ($block == $currentClass) {
+                    $currentClass = '';
+                }
+
+                else if ($block == $currentFunction) {
+                    $currentFunction = '';
+                    $variables       = array();
+                }
+            }
+
+            else if ($tokens[$i] instanceof PHP_Token_OPEN_BRACKET) {
+                for ($j = 1; $j <= 4; $j++) {
+                    if (isset($tokens[$i-$j]) &&
+                        $tokens[$i-$j] instanceof PHP_Token_FUNCTION) {
+                        continue 2;
+                    }
+                }
+
+                if ($tokens[$i-1] instanceof PHP_Token_STRING) {
+                    $j = -1;
+                }
+
+                else if ($tokens[$i-1] instanceof PHP_Token_WHITESPACE &&
+                    $tokens[$i-2] instanceof PHP_Token_STRING) {
+                    $j = -2;
+                }
+
+                else {
+                    continue;
+                }
+
+                $function         = (string)$tokens[$i+$j];
+                $lookForNamespace = TRUE;
+
+                if (isset($tokens[$i+$j-2]) &&
+                    $tokens[$i+$j-2] instanceof PHP_Token_NEW) {
+                    $function .= '::__construct';
+                }
+
+                else if ((isset($tokens[$i+$j-1]) &&
+                        $tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR) ||
+                    (isset($tokens[$i+$j-2]) &&
+                        $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR)) {
+                    $_function        = $tokens[$i+$j];
+                    $lookForNamespace = FALSE;
+
+                    if ($tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR) {
+                        $j -= 2;
+                    } else {
+                        $j -= 3;
+                    }
+
+                    if ($tokens[$i+$j] instanceof PHP_Token_VARIABLE &&
+                        isset($variables[(string)$tokens[$i+$j]])) {
+                        $function = $variables[(string)$tokens[$i+$j]] .
+                            '::' . $_function;
+                    }
+
+                    else if ($tokens[$i+$j] instanceof PHP_Token_STRING &&
+                        $tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR &&
+                        $tokens[$i+$j-2] instanceof PHP_Token_VARIABLE) {
+                        $variable = (string)$tokens[$i+$j-2] . '->' .
+                            (string)$tokens[$i+$j];
+
+                        if (isset($variables[$variable])) {
+                            $function = $variables[$variable] . '::' .
+                                $_function;
+                        }
+                    }
+                }
+
+                else if ($tokens[$i+$j-1] instanceof PHP_Token_DOUBLE_COLON) {
+                    $class = $tokens[$i+$j-2];
+
+                    if ($class == 'self' || $class == 'static') {
+                        $class = $currentClass;
+                    }
+
+                    $function = $class . '::' . $function;
+                    $j       -= 2;
+                }
+
+                if ($lookForNamespace) {
+                    while ($tokens[$i+$j-1] instanceof PHP_Token_NS_SEPARATOR) {
+                        $function = $tokens[$i+$j-2] . '\\' . $function;
+                        $j       -= 2;
+                    }
+                }
+
+                if (!isset($called[$function])) {
+                    $called[$function] = array();
+                }
+
+                $called[$function][] = $currentFunction;
+            }
+        }
+
+        return array($declared, $called);
+
+    }
+
+    /**
+     * @param  array   $files
+     * @param  boolean $recursive
+     * @return array
+     */
+    public function detectDeadCode(array $files, $recursive = FALSE)
+    {
+        $called           = array();
+        $declared         = array();
+        $result           = array();
 
         if ($this->output !== NULL) {
             $bar = new ezcConsoleProgressbar($this->output, count($files));
             print "\nProcessing files\n";
         }
 
+        // Collect declared and called functions
         foreach ($files as $file) {
-            $tokens = new PHP_Token_Stream($file);
-            $count  = count($tokens);
+            list($declaredInFile, $calledInFile) = $this->analyseSourceCode($file);
 
-            for ($i = 0; $i < $count; $i++) {
-                if ($tokens[$i] instanceof PHP_Token_NAMESPACE) {
-                    $namespace = $tokens[$i]->getName();
+            foreach ($declaredInFile as $function => $line) {
+                $declared[$function] = array(
+                    'file' => $file,
+                    'line' => $line,
+                );
+            }
+
+            foreach ($calledInFile as $function => $callees) {
+                if (!isset($called[$function])) {
+                    $called[$function] = $callees;
                 }
-
-                else if ($tokens[$i] instanceof PHP_Token_CLASS) {
-                    $currentClass = $tokens[$i]->getName();
-
-                    if ($namespace != '') {
-                        $currentClass = $namespace . '\\' . $currentClass;
-                    }
-
-                    $currentBlock = $currentClass;
-                }
-
-                else if ($tokens[$i] instanceof PHP_Token_INTERFACE) {
-                    $currentInterface = $tokens[$i]->getName();
-
-                    if ($namespace != '') {
-                        $currentInterface = $namespace . '\\' . $currentClass;
-                    }
-
-                    $currentBlock = $currentInterface;
-                }
-
-                else if ($tokens[$i] instanceof PHP_Token_NEW &&
-                         !$tokens[$i+2] instanceof PHP_Token_VARIABLE) {
-                    if ($tokens[$i-1] instanceof PHP_Token_EQUAL) {
-                        $j = -1;
-                    }
-
-                    else if ($tokens[$i-1] instanceof PHP_Token_WHITESPACE &&
-                             $tokens[$i-2] instanceof PHP_Token_EQUAL) {
-                        $j = -2;
-                    }
-
-                    else {
-                        continue;
-                    }
-
-                    if ($tokens[$i+$j-1] instanceof PHP_Token_WHITESPACE) {
-                        $j--;
-                    }
-
-                    if ($tokens[$i+$j-1] instanceof PHP_Token_VARIABLE) {
-                        $name             = (string)$tokens[$i+$j-1];
-                        $variables[$name] = (string)$tokens[$i+2];
-                    }
-
-                    else if ($tokens[$i+$j-1] instanceof PHP_Token_STRING &&
-                             $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR &&
-                             $tokens[$i+$j-3] instanceof PHP_Token_VARIABLE) {
-                        $name             = (string)$tokens[$i+$j-3] . '->' .
-                                            (string)$tokens[$i+$j-1];
-                        $variables[$name] = (string)$tokens[$i+2];
-                    }
-                }
-
-                else if ($tokens[$i] instanceof PHP_Token_FUNCTION) {
-                    if ($currentInterface != '') {
-                        continue;
-                    }
-
-                    $function = $tokens[$i]->getName();
-
-                    if ($function == 'anonymous function') {
-                        continue;
-                    }
-
-                    $variables = $tokens[$i]->getArguments();
-
-                    if ($currentClass != '') {
-                        $function = $currentClass . '::' . $function;
-                        $variables['$this'] = $currentClass;
-                    }
-
-                    $currentFunction = $function;
-                    $currentBlock    = $currentFunction;
-
-                    $declared[$function] = array(
-                      'file' => $file, 'line' => $tokens[$i]->getLine()
-                    );
-                }
-
-                else if ($tokens[$i] instanceof PHP_Token_OPEN_CURLY) {
-                    array_push($blocks, $currentBlock);
-                    $currentBlock = NULL;
-                }
-
-                else if ($tokens[$i] instanceof PHP_Token_CLOSE_CURLY) {
-                    $block = array_pop($blocks);
-
-                    if ($block == $currentClass) {
-                        $currentClass = '';
-                    }
-
-                    else if ($block == $currentFunction) {
-                        $currentFunction = '';
-                        $variables       = array();
-                    }
-                }
-
-                else if ($tokens[$i] instanceof PHP_Token_OPEN_BRACKET) {
-                    for ($j = 1; $j <= 4; $j++) {
-                        if (isset($tokens[$i-$j]) &&
-                            $tokens[$i-$j] instanceof PHP_Token_FUNCTION) {
-                            continue 2;
-                        }
-                    }
-
-                    if ($tokens[$i-1] instanceof PHP_Token_STRING) {
-                        $j = -1;
-                    }
-
-                    else if ($tokens[$i-1] instanceof PHP_Token_WHITESPACE &&
-                             $tokens[$i-2] instanceof PHP_Token_STRING) {
-                        $j = -2;
-                    }
-
-                    else {
-                        continue;
-                    }
-
-                    $function         = (string)$tokens[$i+$j];
-                    $lookForNamespace = TRUE;
-
-                    if (isset($tokens[$i+$j-2]) &&
-                        $tokens[$i+$j-2] instanceof PHP_Token_NEW) {
-                        $function .= '::__construct';
-                    }
-
-                    else if ((isset($tokens[$i+$j-1]) &&
-                              $tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR) ||
-                             (isset($tokens[$i+$j-2]) &&
-                              $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR)) {
-                        $_function        = $tokens[$i+$j];
-                        $lookForNamespace = FALSE;
-
-                        if ($tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR) {
-                            $j -= 2;
-                        } else {
-                            $j -= 3;
-                        }
-
-                        if ($tokens[$i+$j] instanceof PHP_Token_VARIABLE &&
-                            isset($variables[(string)$tokens[$i+$j]])) {
-                            $function = $variables[(string)$tokens[$i+$j]] .
-                                        '::' . $_function;
-                        }
-
-                        else if ($tokens[$i+$j] instanceof PHP_Token_STRING &&
-                                 $tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR &&
-                                 $tokens[$i+$j-2] instanceof PHP_Token_VARIABLE) {
-                            $variable = (string)$tokens[$i+$j-2] . '->' .
-                                        (string)$tokens[$i+$j];
-
-                            if (isset($variables[$variable])) {
-                                $function = $variables[$variable] . '::' .
-                                            $_function;
-                            }
-                        }
-                    }
-
-                    else if ($tokens[$i+$j-1] instanceof PHP_Token_DOUBLE_COLON) {
-                        $class = $tokens[$i+$j-2];
-
-                        if ($class == 'self' || $class == 'static') {
-                            $class = $currentClass;
-                        }
-
-                        $function = $class . '::' . $function;
-                        $j       -= 2;
-                    }
-
-                    if ($lookForNamespace) {
-                        while ($tokens[$i+$j-1] instanceof PHP_Token_NS_SEPARATOR) {
-                            $function = $tokens[$i+$j-2] . '\\' . $function;
-                            $j       -= 2;
-                        }
-                    }
-
-                    if (!isset($called[$function])) {
-                        $called[$function] = array();
-                    }
-
-                    $called[$function][] = $currentFunction;
+                else {
+                    $called[$function] = array_merge($called[$function], $callees);
                 }
             }
 
@@ -289,8 +323,7 @@ class PHPDCD_Detector
             }
         }
 
-        unset($tokens, $count);
-
+        // Build result array: declared functions that were not called.
         foreach ($declared as $name => $source) {
             if (!isset($called[$name])) {
                 $result[$name] = $source;
