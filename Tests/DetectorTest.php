@@ -409,4 +409,19 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
           )
         );
     }
+
+
+    public function testSubclasses1()
+    {
+        $file = TEST_FILES_PATH . 'issue_18.php';
+        $this->assertEquals(
+            array(
+                'Rabbit::eatsCarrots' => array(
+                    'file' => $file,
+                    'line' => 18,
+                ),
+            ),
+            $this->detector->detectDeadCode(array($file), FALSE)
+        );
+    }
 }
