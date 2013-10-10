@@ -181,7 +181,7 @@ class PHPDCD_TextUI_Command
         $result   = $detector->detectDeadCode($files, $recursive);
 
         $printer = new PHPDCD_TextUI_ResultPrinter;
-        $printer->printResult($result, $commonPath);
+        $printer->printResult($result);
         unset($printer);
     }
 

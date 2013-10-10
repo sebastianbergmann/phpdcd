@@ -59,7 +59,7 @@ class PHPDCD_TextUI_ResultPrinter
      * @param array  $result
      * @param string $commonPath
      */
-    public function printResult(array $result, $commonPath)
+    public function printResult(array $result, $commonPath='')
     {
         foreach ($result as $name => $source) {
             printf(
