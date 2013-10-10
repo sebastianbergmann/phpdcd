@@ -63,6 +63,9 @@ if (!defined('TEST_FILES_PATH')) {
  */
 class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var PHPDCD_Detector
+     */
     protected $detector;
 
     protected function setUp()
