@@ -149,4 +149,81 @@ class AnalyserTest extends PHPUnit_Framework_TestCase
     }
 
 
+    /**
+     * @covers SebastianBergmann\PHPDCD\Analyser::getFunctionDeclarations SebastianBergmann\PHPDCD\Analyser::getFunctionCalls
+     */
+    public function testParentDoubleColonHandling()
+    {
+        $file = TEST_FILES_PATH . 'parent_double_colon_handling.php';
+        $this->analyser->analyseFile($file);
+        $this->assertEquals(
+            array('Toy::ping', 'Ball::roll'),
+            array_keys($this->analyser->getFunctionDeclarations())
+        );
+        $calls = $this->analyser->getFunctionCalls();
+        $this->assertArrayHasKey('Toy::ping', $calls);
+        $this->assertArrayHasKey('Ball::__construct', $calls);
+        $this->assertArrayHasKey('Ball::roll', $calls);
+    }
+
+    /**
+     * @covers SebastianBergmann\PHPDCD\Analyser::getClassDescendants
+     */
+    public function testGetClassDescendants()
+    {
+        $sourceCode = '<?php
+            abstract class A {}
+            class B extends A {}
+            class C extends A {}
+            class D extends B {}
+            class E extends D {}
+            class Z implements I {}
+        ';
+        $this->analyser->analyseSourceCode($sourceCode);
+        $descendants = $this->analyser->getClassDescendants();
+        $expected = array(
+            'A' => array('B', 'C', 'D', 'E'),
+            'B' => array('D', 'E'),
+            'D' => array('E'),
+        );
+        $this->assertSame($expected, $descendants);
+    }
+
+    /**
+     * @covers SebastianBergmann\PHPDCD\Analyser::getAncestors
+     * @dataProvider provideTestGetAncestors
+     */
+    public function testGetAncestors($child, $expectedAncestors)
+    {
+        $sourceCode = '<?php
+            abstract class A {}
+            class B extends A {}
+            class C extends A {}
+            class D extends B {}
+            class E extends D {}
+            class Z implements I {}
+        ';
+        $this->analyser->analyseSourceCode($sourceCode);
+        $ancestors = $this->analyser->getAncestors($child);
+        sort($ancestors);
+        sort($expectedAncestors);
+        $this->assertSame($expectedAncestors, $ancestors);
+    }
+
+    /**
+     * Data provider for testGetAncestors
+     */
+    public function provideTestGetAncestors()
+    {
+        $data = array();
+        $data[] = array('A', array());
+        $data[] = array('B', array('A'));
+        $data[] = array('C', array('A'));
+        $data[] = array('D', array('A', 'B'));
+        $data[] = array('E', array('A', 'B', 'D'));
+        $data[] = array('Z', array());
+        return $data;
+    }
+
+
 }
