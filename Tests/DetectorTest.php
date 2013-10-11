@@ -426,24 +426,6 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
 
-    public function testSubclasses1Analysis()
-    {
-        $file = TEST_FILES_PATH . 'issue_18.php';
-        list($declared, $called, $classHierarchy) = $this->detector->analyseSourceCode($file);
-        $this->assertEquals(
-            array('Animal::hasHead', 'Rabbit::hasFur', 'Rabbit::eatsCarrots'),
-            array_keys($declared)
-        );
-        $this->assertEquals(
-            array('Rabbit::__construct', 'Rabbit::hasHead', 'Rabbit::hasFur'),
-            array_keys($called)
-        );
-        $this->assertEquals(
-            array('Animal' => array('Rabbit')),
-            $classHierarchy
-        );
-    }
-
     public function testSubclasses02Detection()
     {
         $file = TEST_FILES_PATH . 'subclasses02.php';

@@ -48,7 +48,8 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
-                'phpdcd_detector' => '/Detector.php',
+                'phpdcd_analyser' => '/Analyser.php',
+          'phpdcd_detector' => '/Detector.php',
           'phpdcd_textui_command' => '/TextUI/Command.php',
           'phpdcd_textui_resultprinter' => '/TextUI/ResultPrinter.php'
             );
