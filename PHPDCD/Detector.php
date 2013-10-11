@@ -72,8 +72,10 @@ class PHPDCD_Detector
      * Analyse PHP source code for defined and called functions
      *
      * @param string $input filename or PHP source code (see PHP_Token_Stream).
-     * @return list($declared, $called) with $declared: mapping function name to line number of declaration
-     * and $called: mapping called function to calling function
+     * @return list($declared, $called, $classHierarchy) with
+     *      $declared: mapping function name to line number of declaration
+     *      $called: mapping called function to calling function
+     *      $classHierarchy: mapping parent classes to subclasses
      */
     public function analyseSourceCode($input)
     {
@@ -86,6 +88,7 @@ class PHPDCD_Detector
         $declared         = array();
         $namespace        = '';
         $variables        = array();
+        $classHierarchy   = array();
 
 
         $tokens = new PHP_Token_Stream($input);
@@ -276,9 +279,14 @@ class PHPDCD_Detector
 
                 $called[$function][] = $currentFunction;
             }
+
+            else if ($tokens[$i] instanceof PHP_Token_EXTENDS
+            && $tokens[$i+2] instanceof PHP_Token_STRING) {
+                $classHierarchy[(string)$tokens[$i+2]][] = $currentClass;
+            }
         }
 
-        return array($declared, $called);
+        return array($declared, $called, $classHierarchy);
 
     }
 
@@ -292,6 +300,7 @@ class PHPDCD_Detector
         $called           = array();
         $declared         = array();
         $result           = array();
+        $classHierarchy    = array();
 
         if ($this->output !== NULL) {
             $bar = new ezcConsoleProgressbar($this->output, count($files));
@@ -300,7 +309,7 @@ class PHPDCD_Detector
 
         // Collect declared and called functions
         foreach ($files as $file) {
-            list($declaredInFile, $calledInFile) = $this->analyseSourceCode($file);
+            list($declaredInFile, $calledInFile, $classHierachyInFile) = $this->analyseSourceCode($file);
 
             foreach ($declaredInFile as $function => $line) {
                 $declared[$function] = array(
@@ -318,6 +327,8 @@ class PHPDCD_Detector
                 }
             }
 
+            $classHierarchy = array_merge($classHierarchy, $classHierachyInFile);
+
             if ($this->output !== NULL) {
                 $bar->advance();
             }
@@ -326,7 +337,25 @@ class PHPDCD_Detector
         // Build result array: declared functions that were not called.
         foreach ($declared as $name => $source) {
             if (!isset($called[$name])) {
-                $result[$name] = $source;
+                $used = FALSE;
+                // For methods: check calls from subclass instances as well
+                $parts = explode('::', $name);
+                if (count($parts) == 2) {
+                    $class = $parts[0];
+                    // TODO: also support multilevel hierarchies.
+                    $subclasses = isset($classHierarchy[$class]) ? $classHierarchy[$class] : array();
+                    foreach ($subclasses as $subclass) {
+                        // TODO: also check if parent implementations are completely hidden by all child's implementations?
+                        if (isset($called[$subclass . '::' . $parts[1]])) {
+                            $used = TRUE;
+                            break;
+                        }
+                    }
+                }
+
+                if (!$used) {
+                    $result[$name] = $source;
+                }
             }
         }
 
