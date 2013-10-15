@@ -2,7 +2,7 @@
 /**
  * phpdcd
  *
- * Copyright (c) 2009-2012, Sebastian Bergmann <sb@sebastian-bergmann.de>.
+ * Copyright (c) 2009-2013, Sebastian Bergmann <sb@sebastian-bergmann.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@
  * @package    phpdcd
  * @subpackage Tests
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright  2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @copyright  2009-2013 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @since      File available since Release 1.0.0
  */
@@ -55,7 +55,7 @@ if (!defined('TEST_FILES_PATH')) {
  * @package    phpdcd
  * @subpackage Tests
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright  2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @copyright  2009-2013 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @version    Release: @package_version@
  * @link       http://github.com/sebastianbergmann/phpdcd/
@@ -63,6 +63,9 @@ if (!defined('TEST_FILES_PATH')) {
  */
 class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var PHPDCD_Detector
+     */
     protected $detector;
 
     protected function setUp()
@@ -406,4 +409,32 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
           )
         );
     }
+
+
+    public function testSubclasses1Detection()
+    {
+        $file = TEST_FILES_PATH . 'issue_18.php';
+        $this->assertEquals(
+            array(
+                'Rabbit::eatsCarrots' => array(
+                    'file' => $file,
+                    'line' => 18,
+                ),
+            ),
+            $this->detector->detectDeadCode(array($file), FALSE)
+        );
+    }
+
+
+    public function testSubclasses02Detection()
+    {
+        $file = TEST_FILES_PATH . 'subclasses02.php';
+        $this->assertEquals(
+            array(),
+            $this->detector->detectDeadCode(array($file), FALSE)
+        );
+    }
+
+
+
 }

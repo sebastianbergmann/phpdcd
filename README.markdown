@@ -20,7 +20,9 @@ Also note that infering the type of a variable is limited to type-hinted argumen
 Installation
 ------------
 
-`phpdcd` should be installed using the PEAR Installer, the backbone of the [PHP Extension and Application Repository](http://pear.php.net/) that provides a distribution system for PHP packages.
+### With PEAR
+
+`phpdcd` can be installed using the PEAR Installer, the backbone of the [PHP Extension and Application Repository](http://pear.php.net/) that provides a distribution system for PHP packages.
 
 Depending on your OS distribution and/or your PHP environment, you may need to install PEAR or update your existing PEAR installation before you can proceed with the following instructions. `sudo pear upgrade PEAR` usually suffices to upgrade an existing PEAR installation. The [PEAR Manual ](http://pear.php.net/manual/en/installation.getting.php) explains how to perform a fresh installation of PEAR.
 
@@ -30,3 +32,20 @@ The following two commands (which you may have to run as `root`) are all that is
     pear install pear.phpunit.de/phpdcd
 
 After the installation you can find the `phpdcd` source files inside your local PEAR directory; the path is usually `/usr/lib/php/PHPDCD`.
+
+
+### With Composer
+
+The dependencies of `phpdcd` can also be resolved with [Composer](http://getcomposer.org/).
+These dependencies, as well as Composer itself, can be installed without root permissions.
+
+First, install Composer if it is not available yet. See [getcomposer.org](http://getcomposer.org/) for installation instructions.
+
+Download the source code of `phpdcd` and install its dependencies by running the following in the root folder of `phpdcd`:
+
+    php composer.phar install
+
+or, if Composer is installed globally:
+
+    composer install
+
