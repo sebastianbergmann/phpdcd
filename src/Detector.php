@@ -60,11 +60,11 @@ class Detector
      * @param  boolean $recursive
      * @return array
      */
-    public function detectDeadCode(array $files, $recursive = FALSE)
+    public function detectDeadCode(array $files, $recursive = false)
     {
         $blocks           = array();
         $called           = array();
-        $currentBlock     = NULL;
+        $currentBlock     = null;
         $currentClass     = '';
         $currentFunction  = '';
         $currentInterface = '';
@@ -80,9 +80,7 @@ class Detector
             for ($i = 0; $i < $count; $i++) {
                 if ($tokens[$i] instanceof \PHP_Token_NAMESPACE) {
                     $namespace = $tokens[$i]->getName();
-                }
-
-                else if ($tokens[$i] instanceof \PHP_Token_CLASS) {
+                } elseif ($tokens[$i] instanceof \PHP_Token_CLASS) {
                     $currentClass = $tokens[$i]->getName();
 
                     if ($namespace != '') {
@@ -90,9 +88,7 @@ class Detector
                     }
 
                     $currentBlock = $currentClass;
-                }
-
-                else if ($tokens[$i] instanceof \PHP_Token_INTERFACE) {
+                } elseif ($tokens[$i] instanceof \PHP_Token_INTERFACE) {
                     $currentInterface = $tokens[$i]->getName();
 
                     if ($namespace != '') {
@@ -100,20 +96,14 @@ class Detector
                     }
 
                     $currentBlock = $currentInterface;
-                }
-
-                else if ($tokens[$i] instanceof \PHP_Token_NEW &&
-                         !$tokens[$i+2] instanceof \PHP_Token_VARIABLE) {
+                } elseif ($tokens[$i] instanceof \PHP_Token_NEW &&
+                          !$tokens[$i+2] instanceof \PHP_Token_VARIABLE) {
                     if ($tokens[$i-1] instanceof \PHP_Token_EQUAL) {
                         $j = -1;
-                    }
-
-                    else if ($tokens[$i-1] instanceof \PHP_Token_WHITESPACE &&
+                    } elseif ($tokens[$i-1] instanceof \PHP_Token_WHITESPACE &&
                              $tokens[$i-2] instanceof \PHP_Token_EQUAL) {
                         $j = -2;
-                    }
-
-                    else {
+                    } else {
                         continue;
                     }
 
@@ -124,18 +114,14 @@ class Detector
                     if ($tokens[$i+$j-1] instanceof \PHP_Token_VARIABLE) {
                         $name             = (string)$tokens[$i+$j-1];
                         $variables[$name] = (string)$tokens[$i+2];
-                    }
-
-                    else if ($tokens[$i+$j-1] instanceof \PHP_Token_STRING &&
-                             $tokens[$i+$j-2] instanceof \PHP_Token_OBJECT_OPERATOR &&
-                             $tokens[$i+$j-3] instanceof \PHP_Token_VARIABLE) {
+                    } elseif ($tokens[$i+$j-1] instanceof \PHP_Token_STRING &&
+                              $tokens[$i+$j-2] instanceof \PHP_Token_OBJECT_OPERATOR &&
+                              $tokens[$i+$j-3] instanceof \PHP_Token_VARIABLE) {
                         $name             = (string)$tokens[$i+$j-3] . '->' .
                                             (string)$tokens[$i+$j-1];
                         $variables[$name] = (string)$tokens[$i+2];
                     }
-                }
-
-                else if ($tokens[$i] instanceof \PHP_Token_FUNCTION) {
+                } elseif ($tokens[$i] instanceof \PHP_Token_FUNCTION) {
                     if ($currentInterface != '') {
                         continue;
                     }
@@ -159,27 +145,19 @@ class Detector
                     $declared[$function] = array(
                       'file' => $file, 'line' => $tokens[$i]->getLine()
                     );
-                }
-
-                else if ($tokens[$i] instanceof \PHP_Token_OPEN_CURLY) {
+                } elseif ($tokens[$i] instanceof \PHP_Token_OPEN_CURLY) {
                     array_push($blocks, $currentBlock);
-                    $currentBlock = NULL;
-                }
-
-                else if ($tokens[$i] instanceof \PHP_Token_CLOSE_CURLY) {
+                    $currentBlock = null;
+                } elseif ($tokens[$i] instanceof \PHP_Token_CLOSE_CURLY) {
                     $block = array_pop($blocks);
 
                     if ($block == $currentClass) {
                         $currentClass = '';
-                    }
-
-                    else if ($block == $currentFunction) {
+                    } elseif ($block == $currentFunction) {
                         $currentFunction = '';
                         $variables       = array();
                     }
-                }
-
-                else if ($tokens[$i] instanceof \PHP_Token_OPEN_BRACKET) {
+                } elseif ($tokens[$i] instanceof \PHP_Token_OPEN_BRACKET) {
                     for ($j = 1; $j <= 4; $j++) {
                         if (isset($tokens[$i-$j]) &&
                             $tokens[$i-$j] instanceof \PHP_Token_FUNCTION) {
@@ -189,31 +167,25 @@ class Detector
 
                     if ($tokens[$i-1] instanceof \PHP_Token_STRING) {
                         $j = -1;
-                    }
-
-                    else if ($tokens[$i-1] instanceof \PHP_Token_WHITESPACE &&
+                    } elseif ($tokens[$i-1] instanceof \PHP_Token_WHITESPACE &&
                              $tokens[$i-2] instanceof \PHP_Token_STRING) {
                         $j = -2;
-                    }
-
-                    else {
+                    } else {
                         continue;
                     }
 
                     $function         = (string)$tokens[$i+$j];
-                    $lookForNamespace = TRUE;
+                    $lookForNamespace = true;
 
                     if (isset($tokens[$i+$j-2]) &&
                         $tokens[$i+$j-2] instanceof \PHP_Token_NEW) {
                         $function .= '::__construct';
-                    }
-
-                    else if ((isset($tokens[$i+$j-1]) &&
-                              $tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR) ||
-                             (isset($tokens[$i+$j-2]) &&
+                    } elseif ((isset($tokens[$i+$j-1]) &&
+                               $tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR) ||
+                              (isset($tokens[$i+$j-2]) &&
                               $tokens[$i+$j-2] instanceof \PHP_Token_OBJECT_OPERATOR)) {
                         $_function        = $tokens[$i+$j];
-                        $lookForNamespace = FALSE;
+                        $lookForNamespace = false;
 
                         if ($tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR) {
                             $j -= 2;
@@ -225,11 +197,9 @@ class Detector
                             isset($variables[(string)$tokens[$i+$j]])) {
                             $function = $variables[(string)$tokens[$i+$j]] .
                                         '::' . $_function;
-                        }
-
-                        else if ($tokens[$i+$j] instanceof \PHP_Token_STRING &&
-                                 $tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR &&
-                                 $tokens[$i+$j-2] instanceof \PHP_Token_VARIABLE) {
+                        } elseif ($tokens[$i+$j] instanceof \PHP_Token_STRING &&
+                                  $tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR &&
+                                  $tokens[$i+$j-2] instanceof \PHP_Token_VARIABLE) {
                             $variable = (string)$tokens[$i+$j-2] . '->' .
                                         (string)$tokens[$i+$j];
 
@@ -238,9 +208,7 @@ class Detector
                                             $_function;
                             }
                         }
-                    }
-
-                    else if ($tokens[$i+$j-1] instanceof \PHP_Token_DOUBLE_COLON) {
+                    } elseif ($tokens[$i+$j-1] instanceof \PHP_Token_DOUBLE_COLON) {
                         $class = $tokens[$i+$j-2];
 
                         if ($class == 'self' || $class == 'static') {
@@ -276,17 +244,17 @@ class Detector
         }
 
         if ($recursive) {
-            $done = FALSE;
+            $done = false;
 
             while (!$done) {
-                $done = TRUE;
+                $done = true;
 
                 foreach ($called as $callee => $callers) {
-                    $_called = FALSE;
+                    $_called = false;
 
                     foreach ($callers as $caller) {
                         if (!isset($result[$caller])) {
-                            $_called = TRUE;
+                            $_called = true;
                             break;
                         }
                     }
@@ -296,7 +264,7 @@ class Detector
                             $result[$callee] = $declared[$callee];
                         }
 
-                        $done = FALSE;
+                        $done = false;
 
                         unset($called[$callee]);
                     }
