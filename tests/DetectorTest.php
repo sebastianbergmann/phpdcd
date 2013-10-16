@@ -2,7 +2,7 @@
 /**
  * phpdcd
  *
- * Copyright (c) 2009-2012, Sebastian Bergmann <sb@sebastian-bergmann.de>.
+ * Copyright (c) 2009-2013, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,11 +36,15 @@
  *
  * @package    phpdcd
  * @subpackage Tests
- * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright  2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @author     Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2009-2013 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @since      File available since Release 1.0.0
  */
+
+namespace SebastianBergmann\PHPDCD;
+
+use PHPUnit_Framework_TestCase;
 
 if (!defined('TEST_FILES_PATH')) {
     define(
@@ -50,28 +54,28 @@ if (!defined('TEST_FILES_PATH')) {
 }
 
 /**
- * Tests for the PHPDCD_Detector class.
+ * Tests for the SebastianBergmann\PHPDCD\Detector class.
  *
  * @package    phpdcd
  * @subpackage Tests
- * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright  2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @author     Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright  2009-2013 Sebastian Bergmann <sebastian@phpunit.de>
  * @license    http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @version    Release: @package_version@
  * @link       http://github.com/sebastianbergmann/phpdcd/
  * @since      Class available since Release 1.0.0
  */
-class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
+class DetectorTest extends PHPUnit_Framework_TestCase
 {
     protected $detector;
 
     protected function setUp()
     {
-        $this->detector = new PHPDCD_Detector;
+        $this->detector = new Detector;
     }
 
     /**
-     * @covers PHPDCD_Detector::detectDeadCode
+     * @covers SebastianBergmann\PHPDCD\Detector::detectDeadCode
      */
     public function testDetectingDeclaredFunctionsAndMethodsWorks()
     {
@@ -101,7 +105,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers  PHPDCD_Detector::detectDeadCode
+     * @covers  SebastianBergmann\PHPDCD\Detector::detectDeadCode
      * @depends testDetectingDeclaredFunctionsAndMethodsWorks
      */
     public function testDetectingDeclaredFunctionsAndMethodsWorks2()
@@ -136,7 +140,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers  PHPDCD_Detector::detectDeadCode
+     * @covers  SebastianBergmann\PHPDCD\Detector::detectDeadCode
      * @depends testDetectingDeclaredFunctionsAndMethodsWorks
      */
     public function testDetectingFunctionCallsWorks()
@@ -167,7 +171,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers  PHPDCD_Detector::detectDeadCode
+     * @covers  SebastianBergmann\PHPDCD\Detector::detectDeadCode
      * @depends testDetectingFunctionCallsWorks
      */
     public function testDetectingFunctionCallsWorks2()
@@ -202,7 +206,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers  PHPDCD_Detector::detectDeadCode
+     * @covers  SebastianBergmann\PHPDCD\Detector::detectDeadCode
      * @depends testDetectingFunctionCallsWorks
      */
     public function testDetectingFunctionCallsWorks3()
@@ -233,7 +237,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers  PHPDCD_Detector::detectDeadCode
+     * @covers  SebastianBergmann\PHPDCD\Detector::detectDeadCode
      * @depends testDetectingFunctionCallsWorks3
      */
     public function testDetectingFunctionCallsWorks4()
@@ -264,7 +268,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers  PHPDCD_Detector::detectDeadCode
+     * @covers  SebastianBergmann\PHPDCD\Detector::detectDeadCode
      * @depends testDetectingDeclaredFunctionsAndMethodsWorks
      */
     public function testDetectingStaticMethodCallsWorks()
@@ -295,7 +299,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers  PHPDCD_Detector::detectDeadCode
+     * @covers  SebastianBergmann\PHPDCD\Detector::detectDeadCode
      * @depends testDetectingStaticMethodCallsWorks
      */
     public function testDetectingStaticMethodCallsWorks2()
@@ -330,7 +334,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers  PHPDCD_Detector::detectDeadCode
+     * @covers  SebastianBergmann\PHPDCD\Detector::detectDeadCode
      * @depends testDetectingDeclaredFunctionsAndMethodsWorks
      */
     public function testDetectingMethodCallsWorks()
@@ -361,7 +365,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers  PHPDCD_Detector::detectDeadCode
+     * @covers  SebastianBergmann\PHPDCD\Detector::detectDeadCode
      * @depends testDetectingMethodCallsWorks
      */
     public function testDetectingMethodCallsWorks2()
@@ -396,7 +400,7 @@ class PHPDCD_DetectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers PHPDCD_Detector::detectDeadCode
+     * @covers SebastianBergmann\PHPDCD\Detector::detectDeadCode
      */
     public function testThisIsHandledCorrectly()
     {

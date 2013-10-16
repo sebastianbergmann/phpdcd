@@ -2,7 +2,7 @@
 /**
  * phpdcd
  *
- * Copyright (c) 2009-2012, Sebastian Bergmann <sb@sebastian-bergmann.de>.
+ * Copyright (c) 2009-2013, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,38 +36,42 @@
  *
  * @package   phpdcd
  * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright 2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @copyright 2009-2013 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @since     File available since Release 1.0.0
  */
 
-require_once 'Symfony/Component/Finder/Finder.php';
-require_once 'Symfony/Component/Finder/Glob.php';
-require_once 'Symfony/Component/Finder/Iterator/FileTypeFilterIterator.php';
-require_once 'Symfony/Component/Finder/Iterator/MultiplePcreFilterIterator.php';
-require_once 'Symfony/Component/Finder/Iterator/FilenameFilterIterator.php';
-require_once 'Symfony/Component/Finder/Iterator/RecursiveDirectoryIterator.php';
-require_once 'Symfony/Component/Finder/Iterator/ExcludeDirectoryFilterIterator.php';
-require_once 'Symfony/Component/Finder/SplFileInfo.php';
-require_once 'PHP/Token/Stream/Autoload.php';
-require_once 'PHP/Timer/Autoload.php';
-require_once 'ezc/Base/base.php';
+namespace SebastianBergmann\PHPDCD\Log;
 
-spl_autoload_register(
-    function($class) {
-        static $classes = null;
-        if ($classes === null) {
-            $classes = array(
-                'phpdcd_detector' => '/Detector.php',
-          'phpdcd_textui_command' => '/TextUI/Command.php',
-          'phpdcd_textui_resultprinter' => '/TextUI/ResultPrinter.php'
+use Symfony\Component\Console\Output\OutputInterface;
+
+/**
+ * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @copyright 2009-2013 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
+ * @version   Release: @package_version@
+ * @link      http://github.com/sebastianbergmann/phpdcd/tree
+ * @since     Class available since Release 1.0.0
+ */
+class Text
+{
+    /**
+     * Prints a result set from PHPDCD_Detector::detectDeadCode().
+     *
+     * @param Symfony\Component\Console\Output\OutputInterface $output
+     * @param array                                            $result
+     */
+    public function printResult(OutputInterface $output, array $result)
+    {
+        foreach ($result as $name => $source) {
+            $output->writeln(
+                sprintf(
+                    "  - %s()\n    declared in %s:%d\n",
+                    $name,
+                    $source['file'],
+                    $source['line']
+                )
             );
         }
-        $cn = strtolower($class);
-        if (isset($classes[$cn])) {
-            require dirname(__FILE__) . $classes[$cn];
-        }
     }
-);
-
-spl_autoload_register(array('ezcBase', 'autoload'));
+}

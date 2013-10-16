@@ -3,15 +3,17 @@
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
          syntaxCheck="false"
-         bootstrap="PHPDCD/Autoload.php">
+         bootstrap="../src/autoload.php"
+         strict="true">
   <testsuites>
     <testsuite name="PHPDCD">
-      <directory suffix="Test.php">Tests</directory>
+      <directory suffix="Test.php">../tests</directory>
     </testsuite>
   </testsuites>
   <filter>
     <whitelist addUncoveredFilesFromWhitelist="true">
-      <directory suffix=".php">PHPDCD</directory>
+      <directory suffix=".php">../src</directory>
+        <exclude><file>../src/autoload.php</file></exclude>
     </whitelist>
   </filter>
 </phpunit>

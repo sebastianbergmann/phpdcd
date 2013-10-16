@@ -1,7 +1,7 @@
 @echo off
 REM phpdcd
 REM
-REM Copyright (c) 2009-2010, Sebastian Bergmann <sb@sebastian-bergmann.de>.
+REM Copyright (c) 2009-2013, Sebastian Bergmann <sebastian@phpunit.de>.
 REM All rights reserved.
 REM
 REM Redistribution and use in source and binary forms, with or without

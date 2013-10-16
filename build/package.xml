@@ -30,32 +30,29 @@
  <notes>http://github.com/sebastianbergmann/phpdcd/tree</notes>
  <contents>
   <dir name="/">
-   <dir name="PHPDCD">
-    <dir name="TextUI">
-     <file baseinstalldir="/" name="Command.php" role="php">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file baseinstalldir="/" name="ResultPrinter.php" role="php">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
+   <dir name="SebastianBergmann">
+    <dir name="PHPDCD">
+     <dir name="CLI">
+      <file baseinstalldir="/" name="Application.php" role="php" />
+      <file baseinstalldir="/" name="Command.php" role="php" />
+     </dir>
+     <dir name="Log">
+      <file baseinstalldir="/" name="Text.php" role="php" />
+     </dir>
+     <file baseinstalldir="/" name="Detector.php" role="php" />
+     <file baseinstalldir="/" name="autoload.php" role="php" />
     </dir>
-    <file baseinstalldir="/" name="Autoload.php" role="php">
-     <tasks:replace from="@package_version@" to="version" type="package-info" />
-    </file>
-    <file baseinstalldir="/" name="Detector.php" role="php">
-     <tasks:replace from="@package_version@" to="version" type="package-info" />
-    </file>
    </dir>
    <file baseinstalldir="/" name="phpdcd.php" role="script">
     <tasks:replace from="/usr/bin/env php" to="php_bin" type="pear-config"/>
     <tasks:replace from="@php_bin@" to="php_bin" type="pear-config" />
-    <tasks:replace from="@package_version@" to="version" type="package-info" />
    </file>
    <file baseinstalldir="/" name="phpdcd.bat" role="script">
     <tasks:replace from="@php_bin@" to="php_bin" type="pear-config" />
     <tasks:replace from="@bin_dir@" to="bin_dir" type="pear-config" />
-    <tasks:replace from="@package_version@" to="version" type="package-info" />
    </file>
+   <file baseinstalldir="/" name="LICENSE" role="doc"/>
+   <file baseinstalldir="/" name="README.md" role="doc"/>
   </dir>
  </contents>
  <dependencies>
@@ -67,25 +64,33 @@
     <min>1.9.4</min>
    </pearinstaller>
    <package>
-    <name>Finder</name>
+    <name>Console</name>
     <channel>pear.symfony.com</channel>
-    <min>2.1.0BETA4</min>
+    <min>2.2.0</min>
+   </package>
+   <package>
+    <name>FinderFacade</name>
+    <channel>pear.phpunit.de</channel>
+    <min>1.1.0</min>
    </package>
    <package>
     <name>PHP_Timer</name>
     <channel>pear.phpunit.de</channel>
-    <min>1.0.1</min>
+    <min>1.0.4</min>
    </package>
    <package>
     <name>PHP_TokenStream</name>
     <channel>pear.phpunit.de</channel>
-    <min>1.1.0RC1</min>
+    <min>1.1.3</min>
    </package>
    <package>
-    <name>ConsoleTools</name>
-    <channel>components.ez.no</channel>
-    <min>1.6</min>
+    <name>Version</name>
+    <channel>pear.phpunit.de</channel>
+    <min>1.0.0</min>
    </package>
+   <extension>
+    <name>tokenizer</name>
+   </extension>
   </required>
  </dependencies>
  <phprelease>

@@ -2,7 +2,7 @@
 /**
  * phpdcd
  *
- * Copyright (c) 2009-2012, Sebastian Bergmann <sb@sebastian-bergmann.de>.
+ * Copyright (c) 2009-2013, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,38 +36,25 @@
  *
  * @package   phpdcd
  * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright 2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @copyright 2009-2013 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @since     File available since Release 1.0.0
  */
+
+namespace SebastianBergmann\PHPDCD;
 
 /**
  * PHPDCD code analyser.
  *
  * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright 2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @copyright 2009-2013 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @version   Release: @package_version@
  * @link      http://github.com/sebastianbergmann/phpdcd/tree
  * @since     Class available since Release 1.0.0
  */
-class PHPDCD_Detector
+class Detector
 {
-    /**
-     * @var ezcConsoleOutput
-     */
-    protected $output;
-
-    /**
-     * Constructor.
-     *
-     * @param ezcConsoleOutput $output
-     */
-    public function __construct(ezcConsoleOutput $output = NULL)
-    {
-        $this->output = $output;
-    }
-
     /**
      * @param  array   $files
      * @param  boolean $recursive
@@ -86,21 +73,16 @@ class PHPDCD_Detector
         $result           = array();
         $variables        = array();
 
-        if ($this->output !== NULL) {
-            $bar = new ezcConsoleProgressbar($this->output, count($files));
-            print "\nProcessing files\n";
-        }
-
         foreach ($files as $file) {
-            $tokens = new PHP_Token_Stream($file);
+            $tokens = new \PHP_Token_Stream($file);
             $count  = count($tokens);
 
             for ($i = 0; $i < $count; $i++) {
-                if ($tokens[$i] instanceof PHP_Token_NAMESPACE) {
+                if ($tokens[$i] instanceof \PHP_Token_NAMESPACE) {
                     $namespace = $tokens[$i]->getName();
                 }
 
-                else if ($tokens[$i] instanceof PHP_Token_CLASS) {
+                else if ($tokens[$i] instanceof \PHP_Token_CLASS) {
                     $currentClass = $tokens[$i]->getName();
 
                     if ($namespace != '') {
@@ -110,7 +92,7 @@ class PHPDCD_Detector
                     $currentBlock = $currentClass;
                 }
 
-                else if ($tokens[$i] instanceof PHP_Token_INTERFACE) {
+                else if ($tokens[$i] instanceof \PHP_Token_INTERFACE) {
                     $currentInterface = $tokens[$i]->getName();
 
                     if ($namespace != '') {
@@ -120,14 +102,14 @@ class PHPDCD_Detector
                     $currentBlock = $currentInterface;
                 }
 
-                else if ($tokens[$i] instanceof PHP_Token_NEW &&
-                         !$tokens[$i+2] instanceof PHP_Token_VARIABLE) {
-                    if ($tokens[$i-1] instanceof PHP_Token_EQUAL) {
+                else if ($tokens[$i] instanceof \PHP_Token_NEW &&
+                         !$tokens[$i+2] instanceof \PHP_Token_VARIABLE) {
+                    if ($tokens[$i-1] instanceof \PHP_Token_EQUAL) {
                         $j = -1;
                     }
 
-                    else if ($tokens[$i-1] instanceof PHP_Token_WHITESPACE &&
-                             $tokens[$i-2] instanceof PHP_Token_EQUAL) {
+                    else if ($tokens[$i-1] instanceof \PHP_Token_WHITESPACE &&
+                             $tokens[$i-2] instanceof \PHP_Token_EQUAL) {
                         $j = -2;
                     }
 
@@ -135,25 +117,25 @@ class PHPDCD_Detector
                         continue;
                     }
 
-                    if ($tokens[$i+$j-1] instanceof PHP_Token_WHITESPACE) {
+                    if ($tokens[$i+$j-1] instanceof \PHP_Token_WHITESPACE) {
                         $j--;
                     }
 
-                    if ($tokens[$i+$j-1] instanceof PHP_Token_VARIABLE) {
+                    if ($tokens[$i+$j-1] instanceof \PHP_Token_VARIABLE) {
                         $name             = (string)$tokens[$i+$j-1];
                         $variables[$name] = (string)$tokens[$i+2];
                     }
 
-                    else if ($tokens[$i+$j-1] instanceof PHP_Token_STRING &&
-                             $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR &&
-                             $tokens[$i+$j-3] instanceof PHP_Token_VARIABLE) {
+                    else if ($tokens[$i+$j-1] instanceof \PHP_Token_STRING &&
+                             $tokens[$i+$j-2] instanceof \PHP_Token_OBJECT_OPERATOR &&
+                             $tokens[$i+$j-3] instanceof \PHP_Token_VARIABLE) {
                         $name             = (string)$tokens[$i+$j-3] . '->' .
                                             (string)$tokens[$i+$j-1];
                         $variables[$name] = (string)$tokens[$i+2];
                     }
                 }
 
-                else if ($tokens[$i] instanceof PHP_Token_FUNCTION) {
+                else if ($tokens[$i] instanceof \PHP_Token_FUNCTION) {
                     if ($currentInterface != '') {
                         continue;
                     }
@@ -179,12 +161,12 @@ class PHPDCD_Detector
                     );
                 }
 
-                else if ($tokens[$i] instanceof PHP_Token_OPEN_CURLY) {
+                else if ($tokens[$i] instanceof \PHP_Token_OPEN_CURLY) {
                     array_push($blocks, $currentBlock);
                     $currentBlock = NULL;
                 }
 
-                else if ($tokens[$i] instanceof PHP_Token_CLOSE_CURLY) {
+                else if ($tokens[$i] instanceof \PHP_Token_CLOSE_CURLY) {
                     $block = array_pop($blocks);
 
                     if ($block == $currentClass) {
@@ -197,20 +179,20 @@ class PHPDCD_Detector
                     }
                 }
 
-                else if ($tokens[$i] instanceof PHP_Token_OPEN_BRACKET) {
+                else if ($tokens[$i] instanceof \PHP_Token_OPEN_BRACKET) {
                     for ($j = 1; $j <= 4; $j++) {
                         if (isset($tokens[$i-$j]) &&
-                            $tokens[$i-$j] instanceof PHP_Token_FUNCTION) {
+                            $tokens[$i-$j] instanceof \PHP_Token_FUNCTION) {
                             continue 2;
                         }
                     }
 
-                    if ($tokens[$i-1] instanceof PHP_Token_STRING) {
+                    if ($tokens[$i-1] instanceof \PHP_Token_STRING) {
                         $j = -1;
                     }
 
-                    else if ($tokens[$i-1] instanceof PHP_Token_WHITESPACE &&
-                             $tokens[$i-2] instanceof PHP_Token_STRING) {
+                    else if ($tokens[$i-1] instanceof \PHP_Token_WHITESPACE &&
+                             $tokens[$i-2] instanceof \PHP_Token_STRING) {
                         $j = -2;
                     }
 
@@ -222,32 +204,32 @@ class PHPDCD_Detector
                     $lookForNamespace = TRUE;
 
                     if (isset($tokens[$i+$j-2]) &&
-                        $tokens[$i+$j-2] instanceof PHP_Token_NEW) {
+                        $tokens[$i+$j-2] instanceof \PHP_Token_NEW) {
                         $function .= '::__construct';
                     }
 
                     else if ((isset($tokens[$i+$j-1]) &&
-                              $tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR) ||
+                              $tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR) ||
                              (isset($tokens[$i+$j-2]) &&
-                              $tokens[$i+$j-2] instanceof PHP_Token_OBJECT_OPERATOR)) {
+                              $tokens[$i+$j-2] instanceof \PHP_Token_OBJECT_OPERATOR)) {
                         $_function        = $tokens[$i+$j];
                         $lookForNamespace = FALSE;
 
-                        if ($tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR) {
+                        if ($tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR) {
                             $j -= 2;
                         } else {
                             $j -= 3;
                         }
 
-                        if ($tokens[$i+$j] instanceof PHP_Token_VARIABLE &&
+                        if ($tokens[$i+$j] instanceof \PHP_Token_VARIABLE &&
                             isset($variables[(string)$tokens[$i+$j]])) {
                             $function = $variables[(string)$tokens[$i+$j]] .
                                         '::' . $_function;
                         }
 
-                        else if ($tokens[$i+$j] instanceof PHP_Token_STRING &&
-                                 $tokens[$i+$j-1] instanceof PHP_Token_OBJECT_OPERATOR &&
-                                 $tokens[$i+$j-2] instanceof PHP_Token_VARIABLE) {
+                        else if ($tokens[$i+$j] instanceof \PHP_Token_STRING &&
+                                 $tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR &&
+                                 $tokens[$i+$j-2] instanceof \PHP_Token_VARIABLE) {
                             $variable = (string)$tokens[$i+$j-2] . '->' .
                                         (string)$tokens[$i+$j];
 
@@ -258,7 +240,7 @@ class PHPDCD_Detector
                         }
                     }
 
-                    else if ($tokens[$i+$j-1] instanceof PHP_Token_DOUBLE_COLON) {
+                    else if ($tokens[$i+$j-1] instanceof \PHP_Token_DOUBLE_COLON) {
                         $class = $tokens[$i+$j-2];
 
                         if ($class == 'self' || $class == 'static') {
@@ -270,7 +252,7 @@ class PHPDCD_Detector
                     }
 
                     if ($lookForNamespace) {
-                        while ($tokens[$i+$j-1] instanceof PHP_Token_NS_SEPARATOR) {
+                        while ($tokens[$i+$j-1] instanceof \PHP_Token_NS_SEPARATOR) {
                             $function = $tokens[$i+$j-2] . '\\' . $function;
                             $j       -= 2;
                         }
@@ -282,10 +264,6 @@ class PHPDCD_Detector
 
                     $called[$function][] = $currentFunction;
                 }
-            }
-
-            if ($this->output !== NULL) {
-                $bar->advance();
             }
         }
 
@@ -327,10 +305,6 @@ class PHPDCD_Detector
         }
 
         ksort($result);
-
-        if ($this->output !== NULL) {
-            print "\n";
-        }
 
         return $result;
     }

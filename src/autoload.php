@@ -2,7 +2,7 @@
 /**
  * phpdcd
  *
- * Copyright (c) 2009-2012, Sebastian Bergmann <sb@sebastian-bergmann.de>.
+ * Copyright (c) 2009-2013, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,37 +35,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package   phpdcd
- * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright 2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @author    Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright 2009-2013 Sebastian Bergmann <sebastian@phpunit.de>
  * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
- * @since     File available since Release 1.0.0
+ * @since     File available since Release 1.1.0
  */
 
-require_once 'Symfony/Component/Finder/Finder.php';
-require_once 'Symfony/Component/Finder/Glob.php';
-require_once 'Symfony/Component/Finder/Iterator/FileTypeFilterIterator.php';
-require_once 'Symfony/Component/Finder/Iterator/MultiplePcreFilterIterator.php';
-require_once 'Symfony/Component/Finder/Iterator/FilenameFilterIterator.php';
-require_once 'Symfony/Component/Finder/Iterator/RecursiveDirectoryIterator.php';
-require_once 'Symfony/Component/Finder/Iterator/ExcludeDirectoryFilterIterator.php';
-require_once 'Symfony/Component/Finder/SplFileInfo.php';
-require_once 'PHP/Token/Stream/Autoload.php';
-require_once 'PHP/Timer/Autoload.php';
-require_once 'ezc/Base/base.php';
+require 'SebastianBergmann/FinderFacade/autoload.php';
+require 'SebastianBergmann/Version/autoload.php';
+require 'Symfony/Component/Console/autoloader.php';
+require 'PHP/Token/Stream/Autoload.php';
+require 'PHP/Timer/Autoload.php';
 
 spl_autoload_register(
-    function($class) {
+    function ($class) {
         static $classes = null;
         if ($classes === null) {
             $classes = array(
-                ___CLASSLIST___
+              'sebastianbergmann\\phpdcd\\cli\\application' => '/CLI/Application.php',
+              'sebastianbergmann\\phpdcd\\cli\\command' => '/CLI/Command.php',
+              'sebastianbergmann\\phpdcd\\detector' => '/Detector.php',
+              'sebastianbergmann\\phpdcd\\log\\text' => '/Log/Text.php'
             );
         }
         $cn = strtolower($class);
         if (isset($classes[$cn])) {
-            require ___BASEDIR___$classes[$cn];
+            require __DIR__ . $classes[$cn];
         }
     }
 );
-
-spl_autoload_register(array('ezcBase', 'autoload'));

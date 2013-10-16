@@ -2,7 +2,7 @@
 /**
  * phpdcd
  *
- * Copyright (c) 2009-2012, Sebastian Bergmann <sb@sebastian-bergmann.de>.
+ * Copyright (c) 2009-2013, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,41 +35,29 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package   phpdcd
- * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright 2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @author    Sebastian Bergmann <sebastian@phpunit.de>
+ * @copyright 2009-2013 Sebastian Bergmann <sebastian@phpunit.de>
  * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
- * @since     File available since Release 1.0.0
+ * @since     File available since Release 1.1.0
  */
 
-/**
- * A ResultPrinter for the TextUI.
- *
- * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright 2009-2012 Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
- * @version   Release: @package_version@
- * @link      http://github.com/sebastianbergmann/phpdcd/tree
- * @since     Class available since Release 1.0.0
- */
-class PHPDCD_TextUI_ResultPrinter
-{
-    /**
-     * Prints a result set from PHPDCD_Detector::detectDeadCode().
-     *
-     * @param array  $result
-     * @param string $commonPath
-     */
-    public function printResult(array $result, $commonPath)
-    {
-        foreach ($result as $name => $source) {
-            printf(
-              "\n  - %s()\n    declared in %s:%d\n",
-              $name,
-              str_replace($commonPath, '', $source['file']),
-              $source['line']
+require 'SebastianBergmann/FinderFacade/autoload.php';
+require 'SebastianBergmann/Version/autoload.php';
+require 'Symfony/Component/Console/autoloader.php';
+require 'PHP/Token/Stream/Autoload.php';
+require 'PHP/Timer/Autoload.php';
+
+spl_autoload_register(
+    function ($class) {
+        static $classes = null;
+        if ($classes === null) {
+            $classes = array(
+              ___CLASSLIST___
             );
         }
-
-        print "\n" . PHP_Timer::resourceUsage() . "\n";
+        $cn = strtolower($class);
+        if (isset($classes[$cn])) {
+            require ___BASEDIR___$classes[$cn];
+        }
     }
-}
+);
