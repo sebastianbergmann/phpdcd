@@ -168,6 +168,7 @@ class PHPDCD_Detector
 
                     if ($currentClass != '') {
                         $function = $currentClass . '::' . $function;
+                        $variables['$this'] = $currentClass;
                     }
 
                     $currentFunction = $function;
