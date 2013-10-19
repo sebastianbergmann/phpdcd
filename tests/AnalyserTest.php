@@ -103,6 +103,50 @@ class AnalyserTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers SebastianBergmann\PHPDCD\Analyser::getFunctionDeclarations SebastianBergmann\PHPDCD\Analyser::getFunctionCalls SebastianBergmann\PHPDCD\Analyser::getClassDescendants
+     */
+    public function testParentMethods()
+    {
+        $file = TEST_FILES_PATH . 'issue_18.php';
+        $this->analyser->analyseFile($file);
+        $this->assertEquals(
+            array('Animal::hasHead', 'Rabbit::hasFur', 'Rabbit::eatsCarrots'),
+            array_keys($this->analyser->getFunctionDeclarations())
+        );
+        $this->assertEquals(
+            array('Rabbit::__construct', 'Rabbit::hasHead', 'Rabbit::hasFur'),
+            array_keys($this->analyser->getFunctionCalls())
+        );
+        $this->assertEquals(
+            array('Animal' => array('Rabbit')),
+            $this->analyser->getClassDescendants()
+        );
+    }
+
+    /**
+     * @covers SebastianBergmann\PHPDCD\Analyser::getFunctionDeclarations SebastianBergmann\PHPDCD\Analyser::getFunctionCalls SebastianBergmann\PHPDCD\Analyser::getClassDescendants
+     */
+    public function testGreatParentMethods()
+    {
+        $file = TEST_FILES_PATH . 'issue_18_extra.php';
+        $this->analyser->analyseFile($file);
+        $this->assertEquals(
+            array('Animal::hasHead', 'FurryAnimal::hasFur', 'Rabbit::isCute'),
+            array_keys($this->analyser->getFunctionDeclarations())
+        );
+        $this->assertEquals(
+            array('Rabbit::__construct', 'Rabbit::hasHead', 'Rabbit::hasFur', 'Rabbit::isCute'),
+            array_keys($this->analyser->getFunctionCalls())
+        );
+        $this->assertEquals(
+            array(
+                'Animal' => array('FurryAnimal', 'Rabbit'),
+                'FurryAnimal' => array('Rabbit')
+            ),
+            $this->analyser->getClassDescendants()
+        );
+    }
 
 
 }

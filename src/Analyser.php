@@ -72,6 +72,12 @@ class Analyser
      */
     private $functionCalls = array();
 
+    /**
+     * Class hierarchy data: maps parent classes to their children.
+     * @var array
+     */
+    private $subClasses = array();
+
 
     public function getFunctionDeclarations()
     {
@@ -81,6 +87,25 @@ class Analyser
     public function getFunctionCalls()
     {
         return $this->functionCalls;
+    }
+
+    /**
+     * Build a mapping between parent classes and all their descendants
+     * @return array maps each parent classes to array of its subclasses, subsubclasses, ...
+     */
+    public function getClassDescendants()
+    {
+        $descendants = array();
+        foreach ($this->subClasses as $parent => $children) {
+            $descendants[$parent] = $children;
+            // Unroll children in all descendant lists where the parent occurs.
+            foreach ($descendants as $p => $d) {
+                if (in_array($parent, $d)) {
+                    $descendants[$p] = array_merge($descendants[$p], $children);
+                }
+            }
+        }
+        return $descendants;
     }
 
     /**
@@ -124,6 +149,10 @@ class Analyser
                 }
 
                 $currentBlock = $currentClass;
+            } elseif ($tokens[$i] instanceof \PHP_Token_EXTENDS
+                && $tokens[$i+2] instanceof \PHP_Token_STRING) {
+                // Store parent-child class relationship.
+                $this->subClasses[(string)$tokens[$i+2]][] = $currentClass;
             } elseif ($tokens[$i] instanceof \PHP_Token_INTERFACE) {
                 $currentInterface = $tokens[$i]->getName();
 

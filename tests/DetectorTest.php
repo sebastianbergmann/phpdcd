@@ -67,6 +67,9 @@ if (!defined('TEST_FILES_PATH')) {
  */
 class DetectorTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var Detector
+     */
     protected $detector;
 
     protected function setUp()
@@ -410,4 +413,34 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           )
         );
     }
+
+    /**
+     * @covers SebastianBergmann\PHPDCD\Detector::detectDeadCode
+     */
+    public function testParentMethods()
+    {
+        $file = TEST_FILES_PATH . 'issue_18.php';
+        $this->assertEquals(
+            array(
+                'Rabbit::eatsCarrots' => array(
+                    'file' => $file,
+                    'line' => 18,
+                ),
+            ),
+            $this->detector->detectDeadCode(array($file), FALSE)
+        );
+    }
+
+    /**
+     * @covers SebastianBergmann\PHPDCD\Detector::detectDeadCode
+     */
+    public function testGreatParentMethods()
+    {
+        $file = TEST_FILES_PATH . 'issue_18_extra.php';
+        $this->assertEquals(
+            array(),
+            $this->detector->detectDeadCode(array($file), FALSE)
+        );
+    }
+
 }

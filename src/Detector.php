@@ -72,12 +72,30 @@ class Detector
         // Get info on declared and called functions.
         $declared = $analyser->getFunctionDeclarations();
         $called = $analyser->getFunctionCalls();
+        $classDescendants = $analyser->getClassDescendants();
 
         // Search for declared, unused functions.
         $result = array();
         foreach ($declared as $name => $source) {
             if (!isset($called[$name])) {
-                $result[$name] = $source;
+                // Unused function/method at first sight.
+                $used = false;
+                // For methods: check calls from subclass instances as well
+                $parts = explode('::', $name);
+                if (count($parts) == 2) {
+                    $class = $parts[0];
+                    $subclasses = isset($classDescendants[$class]) ? $classDescendants[$class] : array();
+                    foreach ($subclasses as $subclass) {
+                        if (isset($called[$subclass . '::' . $parts[1]])) {
+                            $used = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!$used) {
+                    $result[$name] = $source;
+                }
             }
         }
 
