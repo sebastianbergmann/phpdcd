@@ -52,6 +52,7 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
+              'sebastianbergmann\\phpdcd\\analyser' => '/Analyser.php',
               'sebastianbergmann\\phpdcd\\cli\\application' => '/CLI/Application.php',
               'sebastianbergmann\\phpdcd\\cli\\command' => '/CLI/Command.php',
               'sebastianbergmann\\phpdcd\\detector' => '/Detector.php',
