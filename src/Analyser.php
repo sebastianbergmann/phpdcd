@@ -119,8 +119,12 @@ class Analyser
     {
         $ancestors = array();
         while (isset($this->classParents[$child])) {
-            $ancestors[] = $this->classParents[$child];
             $child = $this->classParents[$child];
+            if (in_array($child, $ancestors)) {
+                $cycle = implode(' -> ', $ancestors) . ' -> ' . $child;
+                throw new \RuntimeException('Class hierarchy cycle detected: ' . $cycle);
+            }
+            $ancestors[] = $child;
         }
         return $ancestors;
     }

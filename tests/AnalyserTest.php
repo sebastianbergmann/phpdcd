@@ -225,5 +225,23 @@ class AnalyserTest extends PHPUnit_Framework_TestCase
         return $data;
     }
 
+    /**
+     * @covers SebastianBergmann\PHPDCD\Analyser::getAncestors
+     */
+    public function testGetAncestorsWithCycle()
+    {
+        // This code snippet is invalid PHP,
+        // but PHPDCD should complain about this and not naively end up in an endless loop.
+        $sourceCode = '<?php
+            class A extends D {}
+            class B extends A {}
+            class C extends B {}
+            class D extends C {}
+        ';
+        $this->analyser->analyseSourceCode($sourceCode);
+        $this->setExpectedException('RunTimeException', 'Class hierarchy cycle detected');
+        $this->analyser->getAncestors('A');
+    }
+
 
 }
