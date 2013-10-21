@@ -73,10 +73,10 @@ class Analyser
     private $functionCalls = array();
 
     /**
-     * Class hierarchy data: maps parent classes to their children.
+     * Class hierarchy data: maps classes to their direct parent.
      * @var array
      */
-    private $subClasses = array();
+    private $classParents = array();
 
 
     public function getFunctionDeclarations()
@@ -84,9 +84,49 @@ class Analyser
         return $this->functionDeclarations;
     }
 
+    /**
+     * Get function calls we detected
+     * @return array maps "callees" to array of "callers"
+     */
     public function getFunctionCalls()
     {
+        // Resolve parent(class) calls if possible
+        foreach ($this->functionCalls as $call => $callers) {
+            if (strpos($call, 'parent(') === 0) {
+                preg_match('/parent\\((.*?)\\)::(.*)/', $call, $matches);
+                $class = $matches[1];
+                $method = $matches[2];
+                foreach ($this->getAncestors($class) as $ancestor) {
+                    $resolvedCall = $ancestor . '::' . $method;
+                    if (isset($this->functionDeclarations[$resolvedCall])) {
+                        $this->functionCalls[$resolvedCall] = $callers;
+                        // TODO: also remove unresolved parent(class) entries?
+                        break;
+                    }
+                }
+            }
+        }
+
         return $this->functionCalls;
+    }
+
+    /**
+     * Get array of a class's ancestors.
+     * @param $child
+     * @return array of ancestors
+     */
+    public function getAncestors($child)
+    {
+        $ancestors = array();
+        while (isset($this->classParents[$child])) {
+            $child = $this->classParents[$child];
+            if (in_array($child, $ancestors)) {
+                $cycle = implode(' -> ', $ancestors) . ' -> ' . $child;
+                throw new \RuntimeException('Class hierarchy cycle detected: ' . $cycle);
+            }
+            $ancestors[] = $child;
+        }
+        return $ancestors;
     }
 
     /**
@@ -96,13 +136,14 @@ class Analyser
     public function getClassDescendants()
     {
         $descendants = array();
-        foreach ($this->subClasses as $parent => $children) {
-            $descendants[$parent] = $children;
-            // Unroll children in all descendant lists where the parent occurs.
-            foreach ($descendants as $p => $d) {
-                if (in_array($parent, $d)) {
-                    $descendants[$p] = array_merge($descendants[$p], $children);
-                }
+        foreach ($this->classParents as $child => $parent) {
+            // Direct child
+            $descendants[$parent][] = $child;
+            // Store child for further ancestors
+            $ancestor = $parent;
+            while (isset($this->classParents[$ancestor])) {
+                $ancestor = $this->classParents[$ancestor];
+                $descendants[$ancestor][] = $child;
             }
         }
         return $descendants;
@@ -152,7 +193,7 @@ class Analyser
             } elseif ($tokens[$i] instanceof \PHP_Token_EXTENDS
                 && $tokens[$i+2] instanceof \PHP_Token_STRING) {
                 // Store parent-child class relationship.
-                $this->subClasses[(string)$tokens[$i+2]][] = $currentClass;
+                $this->classParents[$currentClass] = (string)$tokens[$i+2];
             } elseif ($tokens[$i] instanceof \PHP_Token_INTERFACE) {
                 $currentInterface = $tokens[$i]->getName();
 
@@ -274,10 +315,13 @@ class Analyser
                         }
                     }
                 } elseif ($tokens[$i+$j-1] instanceof \PHP_Token_DOUBLE_COLON) {
-                    $class = $tokens[$i+$j-2];
+                    $class = (string)$tokens[$i+$j-2];
 
                     if ($class == 'self' || $class == 'static') {
                         $class = $currentClass;
+                    }
+                    elseif ($class == 'parent') {
+                        $class = "parent($currentClass)";
                     }
 
                     $function = $class . '::' . $function;

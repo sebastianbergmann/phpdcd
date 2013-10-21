@@ -443,4 +443,12 @@ class DetectorTest extends PHPUnit_Framework_TestCase
         );
     }
 
+
+    public function testParentDoubleColonHandling()
+    {
+        $file = TEST_FILES_PATH . 'parent_double_colon_handling.php';
+        $result = $this->detector->detectDeadCode(array($file), FALSE);
+        $this->assertEquals(array(), $result);
+    }
+
 }
