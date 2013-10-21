@@ -243,5 +243,23 @@ class AnalyserTest extends PHPUnit_Framework_TestCase
         $this->analyser->getAncestors('A');
     }
 
+    /**
+     * @see https://github.com/sebastianbergmann/phpdcd/issues/26
+     * @covers SebastianBergmann\PHPDCD\Analyser::getFunctionDeclarations SebastianBergmann\PHPDCD\Analyser::getFunctionCalls
+     */
+    public function testMethodsFunctionsMixup()
+    {
+        $file = TEST_FILES_PATH . 'methods_vs_functions.php';
+        $this->analyser->analyseFile($file);
+        $this->assertEquals(
+            array('Klass::doSomething', 'doSomething', 'main'),
+            array_keys($this->analyser->getFunctionDeclarations())
+        );
+        $this->assertEquals(
+            array('::doSomething', 'Klass::__construct', 'main'),
+            array_keys($this->analyser->getFunctionCalls())
+        );
+    }
+
 
 }
