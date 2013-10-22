@@ -299,10 +299,13 @@ class Analyser
                         $j -= 3;
                     }
 
-                    if ($tokens[$i+$j] instanceof \PHP_Token_VARIABLE &&
-                        isset($variables[(string)$tokens[$i+$j]])) {
-                        $function = $variables[(string)$tokens[$i+$j]] .
-                            '::' . $_function;
+                    if ($tokens[$i+$j] instanceof \PHP_Token_VARIABLE) {
+                        if (isset($variables[(string)$tokens[$i+$j]])) {
+                            $function = $variables[(string)$tokens[$i+$j]] .
+                                '::' . $_function;
+                        } else {
+                            $function = '::' . $_function;
+                        }
                     } elseif ($tokens[$i+$j] instanceof \PHP_Token_STRING &&
                         $tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR &&
                         $tokens[$i+$j-2] instanceof \PHP_Token_VARIABLE) {

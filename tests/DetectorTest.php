@@ -444,11 +444,27 @@ class DetectorTest extends PHPUnit_Framework_TestCase
     }
 
 
+    /**
+     * @covers SebastianBergmann\PHPDCD\Detector::detectDeadCode
+     */
     public function testParentDoubleColonHandling()
     {
         $file = TEST_FILES_PATH . 'parent_double_colon_handling.php';
         $result = $this->detector->detectDeadCode(array($file), FALSE);
         $this->assertEquals(array(), $result);
     }
+
+
+    /**
+     * @see https://github.com/sebastianbergmann/phpdcd/issues/26
+     * @covers SebastianBergmann\PHPDCD\Detector::detectDeadCode
+     */
+    public function testMethodsFunctionsMixup()
+    {
+        $file = TEST_FILES_PATH . 'methods_vs_functions.php';
+        $result = $this->detector->detectDeadCode(array($file), FALSE);
+        $this->assertEquals(array('Klass::doSomething', 'doSomething'), array_keys($result));
+    }
+
 
 }
