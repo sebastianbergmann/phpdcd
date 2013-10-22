@@ -165,7 +165,7 @@ class Analyser
      * @param string $sourceCode source code.
      * @param string $filename optional file name to use in declaration definition
      */
-    public function analyseSourceCode($sourceCode, $filename='undefined')
+    public function analyseSourceCode($sourceCode, $filename = 'undefined')
     {
 
         $blocks           = array();
@@ -322,8 +322,7 @@ class Analyser
 
                     if ($class == 'self' || $class == 'static') {
                         $class = $currentClass;
-                    }
-                    elseif ($class == 'parent') {
+                    } elseif ($class == 'parent') {
                         $class = "parent($currentClass)";
                     }
 
