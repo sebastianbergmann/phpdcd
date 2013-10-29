@@ -262,4 +262,20 @@ class AnalyserTest extends PHPUnit_Framework_TestCase
     }
 
 
+    /**
+     * @see https://github.com/sebastianbergmann/phpdcd/issues/28
+     * @covers SebastianBergmann\PHPDCD\Analyser::getFunctionDeclarations
+     */
+    public function testComplexVariableInterpolation()
+    {
+        $file = TEST_FILES_PATH . 'Interpolator.php';
+        $this->analyser->analyseFile($file);
+        $this->assertEquals(
+            array('Interpolator::methodFoo', 'Interpolator::methodBar', 'Interpolator::methodBazBaz'),
+            array_keys($this->analyser->getFunctionDeclarations())
+        );
+    }
+
+
+
 }
