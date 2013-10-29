@@ -251,7 +251,9 @@ class Analyser
                 $this->functionDeclarations[$function] = array(
                     'file' => $filename, 'line' => $tokens[$i]->getLine()
                 );
-            } elseif ($tokens[$i] instanceof \PHP_Token_OPEN_CURLY) {
+            } elseif ($tokens[$i] instanceof \PHP_Token_OPEN_CURLY
+                || $tokens[$i] instanceof \PHP_Token_CURLY_OPEN
+                || $tokens[$i] instanceof \PHP_Token_DOLLAR_OPEN_CURLY_BRACES ) {
                 array_push($blocks, $currentBlock);
                 $currentBlock = null;
             } elseif ($tokens[$i] instanceof \PHP_Token_CLOSE_CURLY) {
