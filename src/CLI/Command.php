@@ -129,12 +129,18 @@ class Command extends AbstractCommand
 
         $quiet = $output->getVerbosity() == OutputInterface::VERBOSITY_QUIET;
 
+        $progressBar = $this->getHelperSet()->get('progress');
+        $progressBar->start($output, count($files));
+
         $detector = new Detector;
 
         $result = $detector->detectDeadCode(
             $files,
-            $input->getOption('recursive')
+            $input->getOption('recursive'),
+            function ($file) use ($progressBar) { $progressBar->advance(); }
         );
+
+        $progressBar->finish();
 
         if (!$quiet) {
             $printer = new Text;
