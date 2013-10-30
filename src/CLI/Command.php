@@ -100,6 +100,12 @@ class Command extends AbstractCommand
                  null,
                  InputOption::VALUE_NONE,
                  'Report code as dead if it is only called by dead code'
+             )
+             ->addOption(
+                'progress',
+                null,
+                InputOption::VALUE_NONE,
+                'Show a progress bar while analysing files'
              );
     }
 
@@ -129,18 +135,27 @@ class Command extends AbstractCommand
 
         $quiet = $output->getVerbosity() == OutputInterface::VERBOSITY_QUIET;
 
-        $progressBar = $this->getHelperSet()->get('progress');
-        $progressBar->start($output, count($files));
+        if ($input->getOption('progress')) {
+            $progressBar = $this->getHelperSet()->get('progress');
+            $progressBar->start($output, count($files));
+            $advanceCallback = function ($file) use ($progressBar) { $progressBar->advance(); };
+        }
+        else {
+            $progressBar = null;
+            $advanceCallback = null;
+        }
 
         $detector = new Detector;
 
         $result = $detector->detectDeadCode(
             $files,
             $input->getOption('recursive'),
-            function ($file) use ($progressBar) { $progressBar->advance(); }
+            $advanceCallback
         );
 
-        $progressBar->finish();
+        if ($progressBar) {
+            $progressBar->finish();
+        }
 
         if (!$quiet) {
             $printer = new Text;
