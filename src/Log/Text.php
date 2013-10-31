@@ -66,8 +66,9 @@ class Text
         foreach ($result as $name => $source) {
             $output->writeln(
                 sprintf(
-                    "  - %s()\n    declared in %s:%d\n",
+                    "  - %s()\n    LOC: %d, declared in %s:%d\n",
                     $name,
+                    $source['loc'],
                     $source['file'],
                     $source['line']
                 )

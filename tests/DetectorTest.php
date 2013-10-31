@@ -86,19 +86,23 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 8
+              'line' => 8,
+              'loc' => 3,
             ),
             'AClass::aStaticMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 4
+              'line' => 4,
+              'loc' => 3,
             ),
             'a_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 13
+              'line' => 13,
+              'loc' => 4
             ),
             'yet_another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 22
+              'line' => 22,
+              'loc' => 3,
             )
           ),
           $this->detector->detectDeadCode(
@@ -117,23 +121,28 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 8
+              'line' => 8,
+              'loc' => 3,
             ),
             'AClass::aStaticMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 4
+              'line' => 4,
+              'loc' => 3,
             ),
             'a_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 13
+              'line' => 13,
+              'loc' => 4
             ),
             'another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 18
+              'line' => 18,
+              'loc' => 3,
             ),
             'yet_another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 22
+              'line' => 22,
+              'loc' => 3,
             )
           ),
           $this->detector->detectDeadCode(
@@ -152,15 +161,18 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 8
+              'line' => 8,
+              'loc' => 3,
             ),
             'AClass::aStaticMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 4
+              'line' => 4,
+              'loc' => 3,
             ),
             'a_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 13
+              'line' => 13,
+              'loc' => 4
             ),
           ),
           $this->detector->detectDeadCode(
@@ -183,19 +195,23 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 8
+              'line' => 8,
+              'loc' => 3,
             ),
             'AClass::aStaticMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 4
+              'line' => 4,
+              'loc' => 3,
             ),
             'a_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 13
+              'line' => 13,
+              'loc' => 4
             ),
             'another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 18
+              'line' => 18,
+              'loc' => 3,
             ),
           ),
           $this->detector->detectDeadCode(
@@ -218,15 +234,18 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 8
+              'line' => 8,
+              'loc' => 3,
             ),
             'AClass::aStaticMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 4
+              'line' => 4,
+              'loc' => 3,
             ),
             'yet_another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 22
+              'line' => 22,
+              'loc' => 3,
             )
           ),
           $this->detector->detectDeadCode(
@@ -249,15 +268,18 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 8
+              'line' => 8,
+              'loc' => 3,
             ),
             'AClass::aStaticMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 4
+              'line' => 4,
+              'loc' => 3,
             ),
             'yet_another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 22
+              'line' => 22,
+              'loc' => 3,
             )
           ),
           $this->detector->detectDeadCode(
@@ -280,15 +302,18 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 8
+              'line' => 8,
+              'loc' => 3,
             ),
             'a_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 13
+              'line' => 13,
+              'loc' => 4
             ),
             'yet_another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 22
+              'line' => 22,
+              'loc' => 3,
             )
           ),
           $this->detector->detectDeadCode(
@@ -311,19 +336,23 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 8
+              'line' => 8,
+              'loc' => 3,
             ),
             'a_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 13
+              'line' => 13,
+              'loc' => 4
             ),
             'another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 18
+              'line' => 18,
+              'loc' => 3,
             ),
             'yet_another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 22
+              'line' => 22,
+              'loc' => 3,
             )
           ),
           $this->detector->detectDeadCode(
@@ -346,15 +375,18 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aStaticMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 4
+              'line' => 4,
+              'loc' => 3,
             ),
             'a_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 13
+              'line' => 13,
+              'loc' => 4
             ),
             'yet_another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 22
+              'line' => 22,
+              'loc' => 3,
             )
           ),
           $this->detector->detectDeadCode(
@@ -377,19 +409,23 @@ class DetectorTest extends PHPUnit_Framework_TestCase
           array(
             'AClass::aStaticMethod' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 4
+              'line' => 4,
+              'loc' => 3,
             ),
             'a_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 13
+              'line' => 13,
+              'loc' => 4
             ),
             'another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 18
+              'line' => 18,
+              'loc' => 3,
             ),
             'yet_another_function' => array(
               'file' => TEST_FILES_PATH . 'declarations.php',
-              'line' => 22
+              'line' => 22,
+              'loc' => 3,
             )
           ),
           $this->detector->detectDeadCode(
@@ -425,6 +461,7 @@ class DetectorTest extends PHPUnit_Framework_TestCase
                 'Rabbit::eatsCarrots' => array(
                     'file' => $file,
                     'line' => 18,
+                    'loc' => 4,
                 ),
             ),
             $this->detector->detectDeadCode(array($file), FALSE)
