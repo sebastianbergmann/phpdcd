@@ -262,6 +262,8 @@ class Analyser
                 if ($block == $currentClass) {
                     $currentClass = '';
                 } elseif ($block == $currentFunction) {
+                    $this->functionDeclarations[$currentFunction]['loc'] =
+                        $tokens[$i]->getLine() - $this->functionDeclarations[$currentFunction]['line'] + 1;
                     $currentFunction = '';
                     $variables       = array();
                 }
