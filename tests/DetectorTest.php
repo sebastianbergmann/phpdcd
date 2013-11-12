@@ -504,4 +504,15 @@ class DetectorTest extends PHPUnit_Framework_TestCase
     }
 
 
+    /**
+     * @covers SebastianBergmann\PHPDCD\Detector::detectDeadCode
+     */
+    public function testIgnoreAbstractMethods()
+    {
+        $file = TEST_FILES_PATH . 'abstract_methods.php';
+        $result = $this->detector->detectDeadCode(array($file), FALSE);
+        $this->assertEquals(array('Painting::getShape'), array_keys($result));
+
+    }
+
 }
