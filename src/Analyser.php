@@ -232,6 +232,14 @@ class Analyser
                     continue;
                 }
 
+                // Ignore abstract methods.
+                for ($j=1; $j<=4; $j++) {
+                    if (isset($tokens[$i-$j]) &&
+                        $tokens[$i-$j] instanceof \PHP_Token_ABSTRACT) {
+                        continue 2;
+                    }
+                }
+
                 $function = $tokens[$i]->getName();
 
                 if ($function == 'anonymous function') {

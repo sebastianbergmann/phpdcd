@@ -277,5 +277,18 @@ class AnalyserTest extends PHPUnit_Framework_TestCase
     }
 
 
+    /**
+     * @covers SebastianBergmann\PHPDCD\Analyser::getFunctionDeclarations
+     */
+    public function testIgnoreAbstractMethods()
+    {
+        $file = TEST_FILES_PATH . 'abstract_methods.php';
+        $this->analyser->analyseFile($file);
+        $this->assertEquals(
+            array('Painting::getShape'),
+            array_keys($this->analyser->getFunctionDeclarations())
+        );
+    }
+
 
 }
