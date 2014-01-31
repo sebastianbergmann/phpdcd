@@ -2,7 +2,7 @@
 /**
  * phpdcd
  *
- * Copyright (c) 2009-2013, Sebastian Bergmann <sebastian@phpunit.de>.
+ * Copyright (c) 2009-2014, Sebastian Bergmann <sebastian@phpunit.de>.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
  *
  * @package   phpdcd
  * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright 2009-2013 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @copyright 2009-2014 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @since     File available since Release 1.0.0
  */
@@ -47,7 +47,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright 2009-2013 Sebastian Bergmann <sb@sebastian-bergmann.de>
+ * @copyright 2009-2014 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
  * @version   Release: @package_version@
  * @link      http://github.com/sebastianbergmann/phpdcd/tree
