@@ -1,13 +1,15 @@
 language: php
 
 php:
+    - 5.3.3
     - 5.3
     - 5.4
     - 5.5
 
 before_script: composer install
 
-script: phpunit --configuration ./build/travis-ci.xml
+script: ./vendor/bin/phpunit --configuration ./build/travis-ci.xml
 
 notifications:
   email: false
+

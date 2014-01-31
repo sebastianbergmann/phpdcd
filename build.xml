@@ -49,8 +49,8 @@
   </exec>
  </target>
 
- <target name="phpunit" description="Run unit tests with PHPUnit">
-  <exec executable="phpunit" failonerror="true">
+ <target name="phpunit" depends="prepare,lint" description="Run unit tests with PHPUnit">
+  <exec executable="${basedir}/vendor/bin/phpunit" failonerror="true">
    <arg value="--configuration" />
    <arg path="${basedir}/build/phpunit.xml" />
   </exec>

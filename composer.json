@@ -21,13 +21,16 @@
         "phpunit/php-timer": ">=1.0.4",
         "phpunit/php-token-stream": ">=1.1.3"
     },
+    "require-dev": {
+        "phpunit/phpunit": "~3.7"
+    },
     "autoload": {
         "classmap": [
             "src/"
         ]
     },
     "bin": [
-        "composer/bin/phpdcd"
+        "phpdcd"
     ],
     "extra": {
         "branch-alias": {
@@ -35,3 +38,4 @@
         }
     }
 }
+
