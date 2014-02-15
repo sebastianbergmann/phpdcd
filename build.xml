@@ -114,6 +114,8 @@
    <fileset dir="${basedir}/vendor/theseer/fdomdocument/src"/>
   </copy>
 
+  <exec executable="${basedir}/build/phar-manifest.php" output="${basedir}/build/phar/manifest.txt"/>
+
   <exec executable="phpab">
    <arg value="--all" />
    <arg value="--phar" />
