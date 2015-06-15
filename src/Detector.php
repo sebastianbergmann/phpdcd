@@ -23,17 +23,21 @@ namespace SebastianBergmann\PHPDCD;
 class Detector
 {
     /**
-     * @param  array   $files
-     * @param  boolean $recursive
+     * @param  array    $files
+     * @param  boolean  $recursive
+     * @param  callable $advanceCallback closure to call each time a file is analysed
      * @return array
      */
-    public function detectDeadCode(array $files, $recursive = false)
+    public function detectDeadCode(array $files, $recursive = false, \Closure $advanceCallback=null)
     {
 
         // Analyse files and collect declared and called functions
         $analyser = new Analyser();
         foreach ($files as $file) {
             $analyser->analyseFile($file);
+            if ($advanceCallback) {
+                $advanceCallback($file);
+            }
         }
 
         // Get info on declared and called functions.
