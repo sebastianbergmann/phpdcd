@@ -13,18 +13,13 @@ namespace SebastianBergmann\PHPDCD;
 /**
  * PHPDCD detector for unused functions.
  *
- * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
- * @version   Release: @package_version@
- * @link      http://github.com/sebastianbergmann/phpdcd/tree
  * @since     Class available since Release 1.0.0
  */
 class Detector
 {
     /**
-     * @param  array   $files
-     * @param  boolean $recursive
+     * @param  array $files
+     * @param  bool  $recursive
      * @return array
      */
     public function detectDeadCode(array $files, $recursive = false)
@@ -37,8 +32,8 @@ class Detector
         }
 
         // Get info on declared and called functions.
-        $declared = $analyser->getFunctionDeclarations();
-        $called = $analyser->getFunctionCalls();
+        $declared         = $analyser->getFunctionDeclarations();
+        $called           = $analyser->getFunctionCalls();
         $classDescendants = $analyser->getClassDescendants();
 
         // Search for declared, unused functions.
@@ -50,7 +45,7 @@ class Detector
                 // For methods: check calls from subclass instances as well
                 $parts = explode('::', $name);
                 if (count($parts) == 2) {
-                    $class = $parts[0];
+                    $class      = $parts[0];
                     $subclasses = isset($classDescendants[$class]) ? $classDescendants[$class] : array();
                     foreach ($subclasses as $subclass) {
                         if (isset($called[$subclass . '::' . $parts[1]])) {

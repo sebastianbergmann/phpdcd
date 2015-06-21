@@ -16,11 +16,6 @@ namespace SebastianBergmann\PHPDCD;
  * Analyses given source code (files) for declared and called functions
  * and aggregates this information.
  *
- * @author    Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @copyright Sebastian Bergmann <sb@sebastian-bergmann.de>
- * @license   http://www.opensource.org/licenses/BSD-3-Clause  The BSD 3-Clause License
- * @version   Release: @package_version@
- * @link      http://github.com/sebastianbergmann/phpdcd/tree
  * @since     Class available since Release 1.0.0
  */
 class Analyser
@@ -45,7 +40,6 @@ class Analyser
      */
     private $classParents = array();
 
-
     public function getFunctionDeclarations()
     {
         return $this->functionDeclarations;
@@ -61,7 +55,7 @@ class Analyser
         foreach ($this->functionCalls as $call => $callers) {
             if (strpos($call, 'parent(') === 0) {
                 preg_match('/parent\\((.*?)\\)::(.*)/', $call, $matches);
-                $class = $matches[1];
+                $class  = $matches[1];
                 $method = $matches[2];
                 foreach ($this->getAncestors($class) as $ancestor) {
                     $resolvedCall = $ancestor . '::' . $method;
@@ -93,6 +87,7 @@ class Analyser
             }
             $ancestors[] = $child;
         }
+
         return $ancestors;
     }
 
@@ -109,10 +104,11 @@ class Analyser
             // Store child for further ancestors
             $ancestor = $parent;
             while (isset($this->classParents[$ancestor])) {
-                $ancestor = $this->classParents[$ancestor];
+                $ancestor                 = $this->classParents[$ancestor];
                 $descendants[$ancestor][] = $child;
             }
         }
+
         return $descendants;
     }
 
@@ -123,6 +119,7 @@ class Analyser
     public function analyseFile($filename)
     {
         $sourceCode = file_get_contents($filename);
+
         return $this->analyseSourceCode($sourceCode, $filename);
     }
 
@@ -130,7 +127,7 @@ class Analyser
      * Analyse PHP source code for defined and called functions
      *
      * @param string $sourceCode source code.
-     * @param string $filename optional file name to use in declaration definition
+     * @param string $filename   optional file name to use in declaration definition
      */
     public function analyseSourceCode($sourceCode, $filename = 'undefined')
     {
@@ -160,7 +157,7 @@ class Analyser
             } elseif ($tokens[$i] instanceof \PHP_Token_EXTENDS
                 && $tokens[$i+2] instanceof \PHP_Token_STRING) {
                 // Store parent-child class relationship.
-                $this->classParents[$currentClass] = (string)$tokens[$i+2];
+                $this->classParents[$currentClass] = (string) $tokens[$i+2];
             } elseif ($tokens[$i] instanceof \PHP_Token_INTERFACE) {
                 $currentInterface = $tokens[$i]->getName();
 
@@ -185,14 +182,14 @@ class Analyser
                 }
 
                 if ($tokens[$i+$j-1] instanceof \PHP_Token_VARIABLE) {
-                    $name             = (string)$tokens[$i+$j-1];
-                    $variables[$name] = (string)$tokens[$i+2];
+                    $name             = (string) $tokens[$i+$j-1];
+                    $variables[$name] = (string) $tokens[$i+2];
                 } elseif ($tokens[$i+$j-1] instanceof \PHP_Token_STRING &&
                     $tokens[$i+$j-2] instanceof \PHP_Token_OBJECT_OPERATOR &&
                     $tokens[$i+$j-3] instanceof \PHP_Token_VARIABLE) {
-                    $name             = (string)$tokens[$i+$j-3] . '->' .
-                        (string)$tokens[$i+$j-1];
-                    $variables[$name] = (string)$tokens[$i+2];
+                    $name             = (string) $tokens[$i+$j-3] . '->' .
+                        (string) $tokens[$i+$j-1];
+                    $variables[$name] = (string) $tokens[$i+2];
                 }
             } elseif ($tokens[$i] instanceof \PHP_Token_FUNCTION) {
                 if ($currentInterface != '') {
@@ -216,7 +213,7 @@ class Analyser
                 $variables = $tokens[$i]->getArguments();
 
                 if ($currentClass != '') {
-                    $function = $currentClass . '::' . $function;
+                    $function           = $currentClass . '::' . $function;
                     $variables['$this'] = $currentClass;
                 }
 
@@ -259,7 +256,7 @@ class Analyser
                     continue;
                 }
 
-                $function         = (string)$tokens[$i+$j];
+                $function         = (string) $tokens[$i+$j];
                 $lookForNamespace = true;
 
                 if (isset($tokens[$i+$j-2]) &&
@@ -279,8 +276,8 @@ class Analyser
                     }
 
                     if ($tokens[$i+$j] instanceof \PHP_Token_VARIABLE) {
-                        if (isset($variables[(string)$tokens[$i+$j]])) {
-                            $function = $variables[(string)$tokens[$i+$j]] .
+                        if (isset($variables[(string) $tokens[$i+$j]])) {
+                            $function = $variables[(string) $tokens[$i+$j]] .
                                 '::' . $_function;
                         } else {
                             $function = '::' . $_function;
@@ -288,8 +285,8 @@ class Analyser
                     } elseif ($tokens[$i+$j] instanceof \PHP_Token_STRING &&
                         $tokens[$i+$j-1] instanceof \PHP_Token_OBJECT_OPERATOR &&
                         $tokens[$i+$j-2] instanceof \PHP_Token_VARIABLE) {
-                        $variable = (string)$tokens[$i+$j-2] . '->' .
-                            (string)$tokens[$i+$j];
+                        $variable = (string) $tokens[$i+$j-2] . '->' .
+                            (string) $tokens[$i+$j];
 
                         if (isset($variables[$variable])) {
                             $function = $variables[$variable] . '::' .
@@ -297,7 +294,7 @@ class Analyser
                         }
                     }
                 } elseif ($tokens[$i+$j-1] instanceof \PHP_Token_DOUBLE_COLON) {
-                    $class = (string)$tokens[$i+$j-2];
+                    $class = (string) $tokens[$i+$j-2];
 
                     if ($class == 'self' || $class == 'static') {
                         $class = $currentClass;
