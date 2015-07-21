@@ -13,6 +13,7 @@ namespace SebastianBergmann\PHPDCD\CLI;
 use SebastianBergmann\PHPDCD\Detector;
 use SebastianBergmann\PHPDCD\Log\Text;
 use SebastianBergmann\FinderFacade\FinderFacade;
+use SebastianBergmann\PHPDCD\Log\XML;
 use Symfony\Component\Console\Command\Command as AbstractCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -58,6 +59,12 @@ class Command extends AbstractCommand
                  InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                  'Exclude a directory from code analysis'
              )
+            ->addOption(
+                'log-xml',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Write result in XML format to file'
+            )
              ->addOption(
                  'recursive',
                  null,
@@ -104,6 +111,11 @@ class Command extends AbstractCommand
             $printer->printResult($output, $result);
 
             $output->writeln(\PHP_Timer::resourceUsage());
+        }
+
+        if ($input->getOption('log-xml')) {
+            $printer = new XML;
+            $printer->printResult($input->getOption('log-xml'), $result);
         }
     }
 
