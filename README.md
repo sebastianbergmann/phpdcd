@@ -1,3 +1,5 @@
+**This project is no longer maintained and its repository is only kept for archival purposes.**
+
 [![Latest Stable Version](https://poser.pugx.org/sebastian/phpdcd/v/stable.png)](https://packagist.org/packages/sebastian/phpdcd)
 [![Build Status](https://travis-ci.org/sebastianbergmann/phpdcd.png?branch=master)](https://travis-ci.org/sebastianbergmann/phpdcd)
 
