@@ -220,9 +220,13 @@ class Analyser
                 $currentFunction = $function;
                 $currentBlock    = $currentFunction;
 
-                $this->functionDeclarations[$function] = array(
-                    'file' => $filename, 'line' => $tokens[$i]->getLine()
-                );
+                $line = $tokens[$i]->getLine();
+                if (isset($line) AND is_numeric($line)) {
+                    $this->functionDeclarations[$function] = array(
+                        'file' => $filename, 'line' => $line
+                    );
+                }
+                unset($line);
             } elseif ($tokens[$i] instanceof \PHP_Token_OPEN_CURLY
                 || $tokens[$i] instanceof \PHP_Token_CURLY_OPEN
                 || $tokens[$i] instanceof \PHP_Token_DOLLAR_OPEN_CURLY_BRACES ) {
@@ -234,8 +238,10 @@ class Analyser
                 if ($block == $currentClass) {
                     $currentClass = '';
                 } elseif ($block == $currentFunction) {
-                    $this->functionDeclarations[$currentFunction]['loc'] =
-                        $tokens[$i]->getLine() - $this->functionDeclarations[$currentFunction]['line'] + 1;
+                    if (isset($this->functionDeclarations[$currentFunction]['line'])) {
+                        $this->functionDeclarations[$currentFunction]['loc'] =
+                            $tokens[$i]->getLine() - $this->functionDeclarations[$currentFunction]['line'] + 1;
+                    }
                     $currentFunction = '';
                     $variables       = array();
                 }
